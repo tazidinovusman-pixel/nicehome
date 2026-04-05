@@ -9,6 +9,7 @@ import Auth from './Auth/Auth';
 import { CartProvider } from './context/CartContext';
 import { Heart, ShoppingBag, User, Sun, Moon, Languages, ShieldCheck } from 'lucide-react'; // ShieldCheck коштук
 import { supabase } from './api/supabaseClient';
+import Footer from './components/Footer';
 
 export const LanguageContext = createContext();
 
@@ -142,6 +143,7 @@ function App() {
                 />
               </Routes>
             </main>
+            <Footer />
           </div>
         </Router>
       </CartProvider>

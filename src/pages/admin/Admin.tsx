@@ -120,16 +120,46 @@ const Admin = () => {
   </select>
 </div>
 
-          <div className="relative">
-            <ImageIcon className="absolute left-4 top-3.5 text-slate-400 w-5 h-5" />
-            <input 
-              className="w-full pl-12 pr-4 py-3.5 bg-slate-50 rounded-2xl outline-none ring-1 ring-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all" 
-              placeholder="Сүрөттүн шилтемеси (URL)" 
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)} 
-            />
-          </div>
+          <div className="space-y-4"> {/* Контейнерге аралык кошуу үчүн */}
+  <div className="relative">
+    <ImageIcon className="absolute left-4 top-3.5 text-slate-400 w-5 h-5" />
+    <input 
+      className="w-full pl-12 pr-4 py-3.5 bg-slate-50 rounded-2xl outline-none ring-1 ring-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all text-slate-900" 
+      placeholder="Сүрөттүн шилтемеси (URL)" 
+      value={imageUrl}
+      onChange={(e) => setImageUrl(e.target.value)} 
+    />
+  </div>
 
+  {/* --- СҮРӨТТҮ АЛДЫН АЛА КӨРҮҮ (PREVIEW) --- */}
+  {imageUrl && (
+    <div className="flex flex-col items-center p-4 bg-slate-50 rounded-2xl border border-dashed border-slate-200 animate-in fade-in zoom-in duration-300">
+      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3">
+        Сүрөттүн көрүнүшү:
+      </p>
+      
+      <div className="w-40 h-40 bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden flex items-center justify-center p-2">
+        <img 
+          src={imageUrl} 
+          alt="Preview" 
+          className="max-w-full max-h-full object-contain"
+          // Эгер шилтеме туура эмес болсо, катаны иштетүү:
+          onError={(e) => {
+            e.currentTarget.src = "https://placehold.co/400x400?text=Сүрөт+табылган+жок";
+          }}
+        />
+      </div>
+      
+      <button 
+        type="button"
+        onClick={() => setImageUrl('')}
+        className="mt-3 text-[10px] text-red-500 hover:underline font-medium"
+      >
+        Шилтемени тазалоо
+      </button>
+    </div>
+  )}
+</div>
           <button 
             type="submit" 
             disabled={isSubmitting}
