@@ -1,125 +1,120 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { supabase } from '../../api/supabaseClient';
-import { Search, Plus, Heart } from 'lucide-react'; 
+import { useNavigate } from 'react-router-dom';
+import { LanguageContext } from '../../App';
 import { useCart } from '../../context/CartContext';
-import CategoryBar from '../../components/CategoryBar'; 
-import { useNavigate } from 'react-router-dom'; // Жаңы кошулду
-import { LanguageContext } from '../../App'; // Жаңы кошулду
+import { Search, Plus, Heart } from 'lucide-react';
+import CategoryBar from '../../components/CategoryBar';
 
 const Home = () => {
-  const [products, setProducts] = useState<any[]>([]);
-  const [inputValue, setInputValue] = useState(''); 
-  const [searchTerm, setSearchTerm] = useState(''); 
-  const [activeCategory, setActiveCategory] = useState('All'); 
+  const [products, setProducts] = useState([]);
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [inputValue, setInputValue] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
-  
-  const navigate = useNavigate(); // Инициализация
-  const { addToCart, favorites, toggleFavorite } = useCart();
-  const { user, darkMode, lang, translations } = useContext(LanguageContext); // App'тен маалыматтарды алуу
+
+  const navigate = useNavigate();
+  const { lang, translations, darkMode } = useContext(LanguageContext);
+  const { addToCart, toggleFavorite, favorites } = useCart();
   const t = translations[lang];
 
-  // --- ЖАҢЫ ЛОГИКА (Катталбагандарды текшерүү) ---
-  const handleAddToCart = (item: any) => {
-    if (!user) {
-      navigate('/auth'); // Эгер кирбесе, логин барагына айдайт
-      return;
-    }
+  // Категориялардын тизмеси (Башкы бетте көрсөтүү үчүн)
+  const categoriesList = ['Kitchen', 'Living Room', 'Bedroom', 'Bathroom', 'Garden'];
+
+  const handleAddToCart = async (item) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) { navigate('/auth'); return; }
     addToCart(item);
   };
 
-  const handleToggleFavorite = (item: any) => {
-    if (!user) {
-      navigate('/auth');
-      return;
-    }
+  const handleToggleFavorite = async (item) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) { navigate('/auth'); return; }
     toggleFavorite(item);
-  };
-  // ---------------------------------------------
-
-  const fetchProducts = async () => {
-    try {
-      setLoading(true);
-      let query = supabase.from('items').select('*');
-      if (searchTerm) query = query.ilike('name', `${searchTerm}%`);
-      if (activeCategory !== 'All') query = query.eq('category', activeCategory);
-
-      const { data, error } = await query;
-      if (error) console.error('Error:', error.message);
-      else setProducts(data || []);
-    } finally {
-      setLoading(false);
-    }
   };
 
   useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      let query = supabase.from('items').select('*');
+      if (activeCategory !== 'All') query = query.eq('category', activeCategory);
+      if (searchTerm) query = query.ilike('name', `%${searchTerm}%`);
+      
+      const { data } = await query;
+      setProducts(data || []);
+      setLoading(false);
+    };
     fetchProducts();
-  }, [searchTerm, activeCategory]);
+  },
+   [activeCategory, searchTerm]);
 
-  const handleSearch = () => {
-    setSearchTerm(inputValue);
-    setActiveCategory('All');
-  };
-
-  if (loading) return (
-    <div className={`flex justify-center items-center h-screen ${darkMode ? 'bg-slate-950' : 'bg-white'}`}>
-      <div className="w-6 h-6 border-2 border-slate-100 border-t-slate-900 rounded-full animate-spin"></div>
+  // ТОВАРДЫН КАРТАСЫ (Компонент)
+  const ProductCard = ({ item }) => (
+    <div className="group">
+      <div className={`aspect-[4/5] mb-4 relative flex items-center justify-center p-4 overflow-hidden rounded-3xl transition-all ${darkMode ? 'bg-slate-900' : 'bg-slate-50'}`}>
+        <img src={item.image_url} alt={item.name} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" />
+        <button onClick={() => handleToggleFavorite(item)} className="absolute top-4 right-4 p-2 bg-white/50 backdrop-blur-md rounded-full hover:bg-white transition-colors">
+          <Heart className={`w-4 h-4 ${favorites?.some(f => f.id === item.id) ? 'fill-red-500 text-red-500' : 'text-slate-400'}`} />
+        </button>
+        <button onClick={() => handleAddToCart(item)} className="absolute bottom-4 right-4 bg-slate-900 text-white p-3 shadow-lg rounded-2xl active:scale-90 transition-transform">
+          <Plus className="w-5 h-5" />
+        </button>
+      </div>
+      <div className="px-1">
+        <p className="text-[8px] uppercase tracking-[0.2em] text-slate-400 mb-1">{item.category}</p>
+        <h2 className="text-sm font-bold line-clamp-1">{item.name}</h2>
+        <p className="text-sm font-black mt-1 text-indigo-600">{item.price} сом</p>
+      </div>
     </div>
   );
 
+  if (loading) return <div className="flex justify-center items-center h-64"><div className="w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div></div>;
+
   return (
-    <div className={`min-h-screen pb-20 ${darkMode ? 'bg-slate-950' : 'bg-white'}`}>
+    <div className={`min-h-screen pb-20 ${darkMode ? 'bg-slate-950 text-white' : 'bg-white text-slate-900'}`}>
       
-      {/* ПОИСК */}
-      <div className={`w-full pt-8 pb-4 px-4 sticky top-0 md:relative z-30 ${darkMode ? 'bg-slate-950' : 'bg-white'}`}>
-        <div className={`max-w-md mx-auto flex items-center gap-3 border-b transition-colors pb-2 px-2 ${darkMode ? 'border-slate-800 focus-within:border-white' : 'border-slate-100 focus-within:border-slate-900'}`}>
-          <Search className="text-slate-300 w-4 h-4 shrink-0" />
+      {/* ИЗДӨӨ */}
+      <div className="max-w-md mx-auto pt-8 px-4">
+        <div className={`flex items-center gap-3 border-b pb-2 px-2 ${darkMode ? 'border-slate-800' : 'border-slate-100'}`}>
+          <Search className="text-slate-400 w-4 h-4" />
           <input 
-            type="text"
-            placeholder={t.search}
-            className={`flex-grow outline-none text-sm bg-transparent ${darkMode ? 'text-white' : 'text-slate-900'}`}
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+            type="text" placeholder={t.search} className="flex-grow outline-none text-sm bg-transparent"
+            value={inputValue} onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && setSearchTerm(inputValue)}
           />
-          <button onClick={handleSearch} className="text-[10px] font-black uppercase tracking-widest">
-             {lang === 'KG' ? 'Табуу' : lang === 'RU' ? 'Найти' : 'Find'}
-          </button>
         </div>
       </div>
 
       <CategoryBar activeCategory={activeCategory} setActiveCategory={setActiveCategory} />
 
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-10">
-        {products.length === 0 ? (
-          <div className="text-center py-20 italic text-slate-400">Табылган жок...</div>
-        ) : (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-10 md:gap-x-8 md:gap-y-16">
-            {products.map((item) => (
-              <div key={item.id} className="group">
-                <div className={`aspect-[4/5] mb-4 relative flex items-center justify-center p-4 overflow-hidden rounded-2xl ${darkMode ? 'bg-slate-900' : 'bg-[#F9F9F9]'}`}>
-                  <img src={item.image_url} alt={item.name} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700" />
-                  
-                  {/* Сүйүктүүлөр баскычы */}
-                  <button onClick={() => handleToggleFavorite(item)} className="absolute top-3 right-3 p-1">
-                    <Heart className={`w-4 h-4 ${favorites?.some(f => f.id === item.id) ? 'fill-red-500 text-red-500' : 'text-slate-300'}`} />
-                  </button>
+     <div className="max-w-7xl mx-auto px-4 md:px-6 py-10">
+  {/* АТАЛЫШЫ (Заголовок) */}
+  <div className="mb-10 text-center md:text-left">
+    <p className="text-indigo-600 text-[10px] font-black uppercase tracking-[0.3em] mb-2">
+      {activeCategory === 'All' ? 'New Collection' : 'Category'}
+    </p>
+    <h2 className="text-3xl font-black uppercase tracking-tighter italic">
+      {activeCategory === 'All' 
+        ? (lang === 'KG' ? 'Баардык товарлар' : 'Все товары') 
+        : (t.categories[activeCategory.toLowerCase()] || activeCategory)
+      }
+    </h2>
+  </div>
 
-                  {/* Корзинага кошуу баскычы */}
-                  <button onClick={() => handleAddToCart(item)} className="absolute bottom-3 right-3 bg-white p-2.5 shadow-sm rounded-full active:scale-90 transition-transform">
-                    <Plus className="w-4 h-4 text-slate-900" />
-                  </button>
-                </div>
-                
-                <div className="px-1">
-                  <p className="text-[7px] uppercase tracking-widest text-slate-400 mb-1">{item.category}</p>
-                  <h2 className={`text-[11px] md:text-sm font-medium line-clamp-1 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{item.name}</h2>
-                  <p className={`text-xs font-bold mt-1 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{item.price} сом</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+  {/* ТОВАРЛАРДЫН ТОРУ (Сетка) */}
+  {products.length === 0 ? (
+    <div className="text-center py-20 italic text-slate-400">Товар табылган жок...</div>
+  ) : (
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-10 md:gap-8">
+      {/* Бул жерде "All" болсо баары аралашып чыгат (каша болуп), 
+         ал эми CategoryBar'дан бирөөнү тандасаң ошолор эле калат 
+      */}
+      {products.map((item) => (
+        <ProductCard key={item.id} item={item} />
+      ))}
+    </div>
+  )}
+</div>
     </div>
   );
 };
