@@ -1,0 +1,6 @@
+@import "tailwindcss";
+/* Добавим мягкий фон для всего сайта, как на твоем скриншоте */
+body {
+  @apply bg-slate-50 text-slate-900;
+  font-family: 'Inter', sans-serif;
+}
