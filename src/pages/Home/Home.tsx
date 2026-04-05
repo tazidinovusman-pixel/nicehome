@@ -2,11 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../../api/supabaseClient';
 import { Search, Plus, Heart } from 'lucide-react'; 
 import { useCart } from '../../context/CartContext';
+// Категориялар компонентин импорттойбуз
+import CategoryBar from '../../components/CategoryBar'; 
 
 const Home = () => {
   const [products, setProducts] = useState<any[]>([]);
-  const [inputValue, setInputValue] = useState(''); // Для текста в поле ввода
-  const [searchTerm, setSearchTerm] = useState(''); // Для активации поиска
+  const [inputValue, setInputValue] = useState(''); 
+  const [searchTerm, setSearchTerm] = useState(''); 
+  const [activeCategory, setActiveCategory] = useState('All'); // Тандалган категория
   const [loading, setLoading] = useState(true);
   
   const { addToCart, favorites, toggleFavorite } = useCart();
@@ -16,9 +19,14 @@ const Home = () => {
       setLoading(true);
       let query = supabase.from('items').select('*');
       
+      // 1. Поиск боюнча фильтр
       if (searchTerm) {
-        // Ищем только те товары, название которых начинается на searchTerm
         query = query.ilike('name', `${searchTerm}%`);
+      }
+
+      // 2. Категория боюнча фильтр (Эгер "All" эмес болсо)
+      if (activeCategory !== 'All') {
+        query = query.eq('category', activeCategory);
       }
 
       const { data, error } = await query;
@@ -32,19 +40,17 @@ const Home = () => {
     }
   };
 
-  // Вызываем загрузку только когда меняется searchTerm (после кнопки)
   useEffect(() => {
     fetchProducts();
-  }, [searchTerm]);
+  }, [searchTerm, activeCategory]); // activeCategory өзгөргөндө кайра жүктөлөт
 
   const handleSearch = () => {
     setSearchTerm(inputValue);
+    setActiveCategory('All'); // Поиск кылганда категорияны баштапкы абалга келтирет
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
+    if (e.key === 'Enter') handleSearch();
   };
 
   if (loading) return (
@@ -54,102 +60,63 @@ const Home = () => {
   );
 
   return (
-    <div className="bg-white min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-12">
-        
-        {/* Секция заголовка и поиска */}
-        <div className="flex flex-col items-center mb-12 md:mb-20">
-          <h1 className="text-[9px] md:text-[10px] uppercase tracking-[0.2em] md:tracking-[0.4em] text-slate-400 mb-6 font-bold text-center">
-            NiceHome Collection
-          </h1>
-          
-          <div className="flex items-center gap-3 w-full max-w-md border-b border-slate-100 focus-within:border-slate-900 transition-colors pb-2 px-2">
-            <Search className="text-slate-300 w-4 h-4 shrink-0" />
-            <input 
-              type="text"
-              placeholder="Издөө..."
-              className="flex-grow outline-none text-xs md:text-sm placeholder:text-slate-300 bg-transparent min-w-0"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={handleKeyDown}
-            />
-            <button 
-              onClick={handleSearch}
-              className="text-[9px] md:text-[10px] uppercase tracking-widest font-black text-slate-900 hover:text-indigo-600 transition-colors shrink-0"
-            >
-              Табуу
-            </button>
-          </div>
+    <div className="bg-white min-h-screen pb-20">
+      
+      {/* 1. ПОИСК ЭМИ ЭҢ ЖОГОРУДА */}
+      <div className="w-full bg-white pt-8 pb-4 px-4 sticky top-0 md:relative z-30">
+        <div className="max-w-md mx-auto flex items-center gap-3 border-b border-slate-100 focus-within:border-slate-900 transition-colors pb-2 px-2">
+          <Search className="text-slate-300 w-4 h-4 shrink-0" />
+          <input 
+            type="text"
+            placeholder="Эмерек издөө..."
+            className="flex-grow outline-none text-sm placeholder:text-slate-300 bg-transparent"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+          />
+          <button onClick={handleSearch} className="text-[10px] font-black uppercase tracking-widest">Табуу</button>
+        </div>
+      </div>
+
+      {/* 2. КАТЕГОРИЯЛАР (Компьютерде поисктун астында, телефондо бургерде) */}
+      <CategoryBar activeCategory={activeCategory} setActiveCategory={setActiveCategory} />
+
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-10">
+        {/* АКТИВДҮҮ КАТЕГОРИЯНЫН АТЫ */}
+        <div className="mb-10 flex flex-col items-center">
+             <h1 className="text-[10px] uppercase tracking-[0.4em] text-slate-400 font-bold">
+               {activeCategory === 'All' ? 'NiceHome Collection' : activeCategory}
+             </h1>
+             <div className="w-8 h-[1px] bg-slate-200 mt-4"></div>
         </div>
 
-        {/* Сетка товаров */}
+        {/* ТОВАРЛАР ТИЗМЕСИ (Адаптацияланган сетка) */}
         {products.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="text-slate-400 text-sm font-light italic mb-4">Мындай товар табылган жок</p>
-            <button 
-                onClick={() => {setInputValue(''); setSearchTerm('');}} 
-                className="text-[10px] uppercase tracking-widest font-bold underline text-slate-500 hover:text-slate-900"
-            >
-                Баарын көрсөтүү
-            </button>
-          </div>
+          <div className="text-center py-20 italic text-slate-400">Товар табылган жок...</div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12 md:gap-x-8 md:gap-y-16">
-            {products.map((item) => {
-              const isFavorite = favorites?.some((fav: any) => fav.id === item.id);
-
-              return (
-                <div key={item.id} className="group">
-                  {/* Контейнер карточки */}
-                  <div className="aspect-[3/4] bg-[#F9F9F9] mb-4 md:mb-6 relative flex items-center justify-center p-6 md:p-10 overflow-hidden rounded-sm">
-                    <img 
-                      src={item.image_url || 'https://via.placeholder.com/400'} 
-                      alt={item.name} 
-                      className="w-full h-full object-contain mix-blend-multiply transition-transform duration-1000 group-hover:scale-105" 
-                    />
-                    
-                    {/* Кнопка Избранное */}
-                    <button 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleFavorite(item);
-                      }}
-                      className="absolute top-4 right-4 z-10 p-1 transition-transform active:scale-90"
-                    >
-                      <Heart 
-                        className={`w-5 h-5 transition-all ${
-                          isFavorite ? 'fill-red-500 text-red-500 scale-110' : 'text-slate-300 hover:text-slate-900'
-                        }`} 
-                      />
-                    </button>
-
-                    {/* Кнопка Плюс (Корзина) */}
-                    <button 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        addToCart(item);
-                      }}
-                      className="absolute bottom-4 right-4 z-10 bg-white text-slate-900 p-2.5 md:p-3 shadow-md rounded-full transition-all hover:bg-slate-900 hover:text-white active:scale-95"
-                    >
-                      <Plus className="w-4 h-4" />
-                    </button>
-                  </div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-10 md:gap-x-8 md:gap-y-16">
+            {products.map((item) => (
+              <div key={item.id} className="group">
+                {/* Карточканын дизайны мурункудай, бирок телефонго ыңгайлуу */}
+                <div className="aspect-[4/5] bg-[#F9F9F9] mb-4 relative flex items-center justify-center p-4 overflow-hidden rounded-2xl">
+                  <img src={item.image_url} alt={item.name} className="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-700" />
                   
-                  {/* Информация о товаре */}
-                  <div className="text-center px-2">
-                    <p className="text-[8px] md:text-[9px] uppercase tracking-[0.2em] text-slate-400 mb-1">
-                      {item.category || 'Жалпы'}
-                    </p>
-                    <h2 className="text-xs md:text-sm font-medium text-slate-900 mb-1.5 line-clamp-1">
-                      {item.name}
-                    </h2>
-                    <p className="text-sm font-bold text-slate-900">
-                      {item.price} сом
-                    </p>
-                  </div>
+                  {/* Кнопкалар телефондо ар дайым көрүнүп турганы жакшы */}
+                  <button onClick={() => toggleFavorite(item)} className="absolute top-3 right-3 p-1">
+                    <Heart className={`w-4 h-4 ${favorites?.some(f => f.id === item.id) ? 'fill-red-500 text-red-500' : 'text-slate-300'}`} />
+                  </button>
+                  <button onClick={() => addToCart(item)} className="absolute bottom-3 right-3 bg-white p-2.5 shadow-sm rounded-full active:scale-90 transition-transform">
+                    <Plus className="w-4 h-4 text-slate-900" />
+                  </button>
                 </div>
-              );
-            })}
+                
+                <div className="px-1">
+                  <p className="text-[7px] uppercase tracking-widest text-slate-400 mb-1">{item.category}</p>
+                  <h2 className="text-[11px] md:text-sm font-medium text-slate-900 line-clamp-1">{item.name}</h2>
+                  <p className="text-xs font-bold text-slate-900 mt-1">{item.price} сом</p>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>

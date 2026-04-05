@@ -101,24 +101,22 @@ const Admin = () => {
             />
           </div>
 
-           <div className="relative">
+      <div className="relative">
   <PlusCircle className="absolute left-4 top-3.5 text-slate-400 w-5 h-5" />
   <select 
     className="w-full pl-12 pr-4 py-3.5 bg-slate-50 rounded-2xl outline-none ring-1 ring-slate-200 focus:ring-2 focus:ring-indigo-500 cursor-pointer appearance-none text-slate-600"
     value={category}
     onChange={(e) => setCategory(e.target.value)}
   >
-    {/* Основные комнаты */}
-    <option value="livingroom">🛋️ Гостиная (Конок бөлмө)</option>
-    <option value="kitchen">🍳 Кухня (Ашкана)</option>
-    <option value="bedroom">🛏️ Спальня (Уктоочу бөлмө)</option>
-
-    {/* Новые категории, которые ты просил */}
-    <option value="bathroom">🚿 Ванная и туалет (Жуунуучу бөлмө)</option>
-    <option value="kids">🧸 Детская (Балдар бөлмөсү)</option>
-    <option value="hallway">🧥 Прихожая (Кире бериш)</option>
-    <option value="office">💻 Кабинет / Офис (Иш бөлмөсү)</option>
-    <option value="garden">🌿 Сад / Терраса (Бакча)</option>
+    {/* МААНИЛҮҮ: value бөлүгү CategoryBar'дагы name менен бирдей болушу керек! */}
+    <option value="Living Room">🛋️ Гостиная (Конок бөлмө)</option>
+    <option value="Kitchen">🍳 Кухня (Ашкана)</option>
+    <option value="Bedroom">🛏️ Спальня (Уктоочу бөлмө)</option>
+    <option value="Bathroom">🚿 Ванная и туалет (Жуунуучу бөлмө)</option>
+    <option value="Kids Room">🧸 Детская (Балдар бөлмөсү)</option>
+    <option value="Hallway">🧥 Прихожая (Кире бериш)</option>
+    <option value="Office">💻 Кабинет / Офис (Иш бөлмөсү)</option>
+    <option value="Garden">🌿 Сад / Терраса (Бакча)</option>
   </select>
 </div>
 
