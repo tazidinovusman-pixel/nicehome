@@ -1,7 +1,9 @@
-import React, { useState, useContext } from 'react'; // useContext коштук
+import React, { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Sofa, UtensilsCrossed, BedDouble, Bath, Baby, DoorOpen, Laptop, TreePine, Menu, X } from 'lucide-react';
-import { LanguageContext } from '../App'; // App'тен контекстти импортто
+import { LanguageContext } from '../App';
 
+// 1. МАССИВ СӨЗСҮЗ КОМПОНЕНТТИН СЫРТЫНДА ТУРУШУ КЕРЕК
 const categories = [
   { id: 'all', key: 'all', name: 'All', icon: null },
   { id: 'living', key: 'living', name: 'Living Room', icon: <Sofa size={20} /> },
@@ -16,14 +18,28 @@ const categories = [
 
 const CategoryBar = ({ activeCategory, setActiveCategory }) => {
   const [isOpen, setIsOpen] = useState(false);
-  
-  // Тилди жана котормолорду алабыз
+  const navigate = useNavigate();
   const { lang, translations, darkMode } = useContext(LanguageContext);
   const t = translations[lang].categories;
 
+  // Категорияны басканда иштөөчү функция
+  const handleCategoryClick = (categoryName) => {
+    setActiveCategory(categoryName); 
+    
+    // URL-ди тазалоо (боштуктарды өчүрүү жана кичине тамгага келтирүү)
+    if (categoryName === 'All') {
+      navigate('/');
+    } else {
+      const urlFriendlyName = categoryName.replace(/\s+/g, '').toLowerCase();
+      navigate(`/?category=${urlFriendlyName}`);
+    }
+    
+    setIsOpen(false); 
+  };
+
   return (
     <>
-      {/* МОБИЛДИК БУРГЕР БАСКЫЧЫ */}
+      {/* MOBILE MENU BUTTON */}
       <div className="md:hidden fixed top-20 left-4 z-40">
         <button 
           onClick={() => setIsOpen(true)}
@@ -33,19 +49,18 @@ const CategoryBar = ({ activeCategory, setActiveCategory }) => {
         </button>
       </div>
 
-      {/* КОМПЬЮТЕРДЕГИ ВЕРСИЯ */}
+      {/* DESKTOP VERSION */}
       <div className={`hidden md:block w-full border-b transition-colors ${darkMode ? 'bg-slate-950 border-slate-800' : 'bg-white border-slate-50'}`}>
         <div className="max-w-7xl mx-auto flex items-center justify-center gap-8 py-4 px-6 overflow-x-auto no-scrollbar">
           {categories.map((cat) => (
             <button
               key={cat.id}
-              onClick={() => setActiveCategory(cat.name)}
+              onClick={() => handleCategoryClick(cat.name)}
               className={`flex flex-col items-center gap-1 group transition-all ${activeCategory === cat.name ? 'opacity-100 scale-105' : 'opacity-40 hover:opacity-100'}`}
             >
               <span className={activeCategory === cat.name ? 'text-indigo-500' : (darkMode ? 'text-white' : 'text-slate-900')}>
                 {cat.icon}
               </span>
-              {/* Бул жерде котормону колдонобуз: t[cat.key] */}
               <span className={`text-[10px] font-bold uppercase tracking-widest ${darkMode ? 'text-slate-300' : 'text-slate-900'}`}>
                 {t[cat.key]}
               </span>
@@ -54,21 +69,20 @@ const CategoryBar = ({ activeCategory, setActiveCategory }) => {
         </div>
       </div>
 
-      {/* МОБИЛДИК КАПТАЛ МЕНЮ (Side Drawer) */}
+      {/* MOBILE OVERLAY MENU */}
       {isOpen && (
         <div className="fixed inset-0 z-[60] flex">
           <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onClick={() => setIsOpen(false)} />
-          <div className={`relative w-[280px] h-full shadow-2xl p-6 flex flex-col animate-in slide-in-from-left duration-300 ${darkMode ? 'bg-slate-900' : 'bg-white'}`}>
+          <div className={`relative w-[280px] h-full shadow-2xl p-6 flex flex-col ${darkMode ? 'bg-slate-900' : 'bg-white'}`}>
             <div className="flex justify-between items-center mb-10">
-              <span className={`font-black text-[10px] uppercase tracking-widest ${darkMode ? 'text-white' : 'text-slate-900'}`}>Меню</span>
+              <span className={`font-black text-[10px] uppercase tracking-widest ${darkMode ? 'text-white' : 'text-slate-900'}`}>Категориялар</span>
               <button onClick={() => setIsOpen(false)} className={darkMode ? 'text-white' : 'text-slate-900'}><X size={20} /></button>
             </div>
-
             <div className="flex flex-col gap-3">
               {categories.map((cat) => (
                 <button
                   key={cat.id}
-                  onClick={() => { setActiveCategory(cat.name); setIsOpen(false); }}
+                  onClick={() => handleCategoryClick(cat.name)}
                   className={`flex items-center gap-4 p-4 rounded-2xl transition-all ${activeCategory === cat.name ? 'bg-indigo-600 text-white' : (darkMode ? 'bg-slate-800 text-slate-300' : 'bg-slate-50 text-slate-600')}`}
                 >
                   {cat.icon}

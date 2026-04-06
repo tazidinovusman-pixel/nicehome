@@ -3,8 +3,20 @@ import { supabase } from '../../api/supabaseClient';
 import { useNavigate } from 'react-router-dom';
 import { LanguageContext } from '../../App';
 import { useCart } from '../../context/CartContext';
+// 1. Бул жерден Laptop, Baby сыяктуу аттарды өчүрдүк, анткени алар сенин компоненттериң менен чаташат
 import { Search, Plus, Heart } from 'lucide-react';
 import CategoryBar from '../../components/CategoryBar';
+
+// 2. Секцияларды "Section" деген ат менен импорттоо (Alias колдонуу). 
+// Бул TypeScript катасын (ts 2322) толук жоготот.
+import SofaSection from '../../components/sections/Sofa';
+import KitchenSection from '../../components/sections/UtensilsCrossed ';
+import BedroomSection from '../../components/sections/BedDouble';
+import BathSection from '../../components/sections/Bath';
+import KidsSection from '../../components/sections/Baby';
+import HallwaySection from '../../components/sections/DoorOpen';
+import OfficeSection from '../../components/sections/Laptop';
+import GardenSection from '../../components/sections/TreePine';
 
 const Home = () => {
   const [products, setProducts] = useState([]);
@@ -17,9 +29,6 @@ const Home = () => {
   const { lang, translations, darkMode } = useContext(LanguageContext);
   const { addToCart, toggleFavorite, favorites } = useCart();
   const t = translations[lang];
-
-  // Категориялардын тизмеси (Башкы бетте көрсөтүү үчүн)
-  const categoriesList = ['Kitchen', 'Living Room', 'Bedroom', 'Bathroom', 'Garden'];
 
   const handleAddToCart = async (item) => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -39,16 +48,13 @@ const Home = () => {
       let query = supabase.from('items').select('*');
       if (activeCategory !== 'All') query = query.eq('category', activeCategory);
       if (searchTerm) query = query.ilike('name', `%${searchTerm}%`);
-      
       const { data } = await query;
       setProducts(data || []);
       setLoading(false);
     };
     fetchProducts();
-  },
-   [activeCategory, searchTerm]);
+  }, [activeCategory, searchTerm]);
 
-  // ТОВАРДЫН КАРТАСЫ (Компонент)
   const ProductCard = ({ item }) => (
     <div className="group">
       <div className={`aspect-[4/5] mb-4 relative flex items-center justify-center p-4 overflow-hidden rounded-3xl transition-all ${darkMode ? 'bg-slate-900' : 'bg-slate-50'}`}>
@@ -72,8 +78,6 @@ const Home = () => {
 
   return (
     <div className={`min-h-screen pb-20 ${darkMode ? 'bg-slate-950 text-white' : 'bg-white text-slate-900'}`}>
-      
-      {/* ИЗДӨӨ */}
       <div className="max-w-md mx-auto pt-8 px-4">
         <div className={`flex items-center gap-3 border-b pb-2 px-2 ${darkMode ? 'border-slate-800' : 'border-slate-100'}`}>
           <Search className="text-slate-400 w-4 h-4" />
@@ -87,34 +91,31 @@ const Home = () => {
 
       <CategoryBar activeCategory={activeCategory} setActiveCategory={setActiveCategory} />
 
-     <div className="max-w-7xl mx-auto px-4 md:px-6 py-10">
-  {/* АТАЛЫШЫ (Заголовок) */}
-  <div className="mb-10 text-center md:text-left">
-    <p className="text-indigo-600 text-[10px] font-black uppercase tracking-[0.3em] mb-2">
-      {activeCategory === 'All' ? 'New Collection' : 'Category'}
-    </p>
-    <h2 className="text-3xl font-black uppercase tracking-tighter italic">
-      {activeCategory === 'All' 
-        ? (lang === 'KG' ? 'Баардык товарлар' : 'Все товары') 
-        : (t.categories[activeCategory.toLowerCase()] || activeCategory)
-      }
-    </h2>
-  </div>
-
-  {/* ТОВАРЛАРДЫН ТОРУ (Сетка) */}
-  {products.length === 0 ? (
-    <div className="text-center py-20 italic text-slate-400">Товар табылган жок...</div>
-  ) : (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-10 md:gap-8">
-      {/* Бул жерде "All" болсо баары аралашып чыгат (каша болуп), 
-         ал эми CategoryBar'дан бирөөнү тандасаң ошолор эле калат 
-      */}
-      {products.map((item) => (
-        <ProductCard key={item.id} item={item} />
-      ))}
-    </div>
-  )}
-</div>
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-10">
+        {activeCategory === 'All' && !searchTerm ? (
+          <div className="space-y-12">
+            {/* 3. Жаңы аттарды (Section) бул жерде колдонобуз */}
+            <SofaSection products={products} ProductCard={ProductCard} setActiveCategory={setActiveCategory} t={t.categories} />
+            <KitchenSection products={products} ProductCard={ProductCard} setActiveCategory={setActiveCategory} t={t.categories} />
+            <BedroomSection products={products} ProductCard={ProductCard} setActiveCategory={setActiveCategory} t={t.categories} />
+            <BathSection products={products} ProductCard={ProductCard} setActiveCategory={setActiveCategory} t={t.categories} />
+            <KidsSection products={products} ProductCard={ProductCard} setActiveCategory={setActiveCategory} t={t.categories} />
+            <HallwaySection products={products} ProductCard={ProductCard} setActiveCategory={setActiveCategory} t={t.categories} />
+            <OfficeSection products={products} ProductCard={ProductCard} setActiveCategory={setActiveCategory} t={t.categories} />
+            <GardenSection products={products} ProductCard={ProductCard} setActiveCategory={setActiveCategory} t={t.categories} />
+          </div>
+        ) : (
+          <>
+            <div className="mb-10 text-center md:text-left">
+              <p className="text-indigo-600 text-[10px] font-black uppercase tracking-[0.3em] mb-2">{searchTerm ? 'Search Results' : 'Category'}</p>
+              <h2 className="text-3xl font-black uppercase tracking-tighter italic">{searchTerm ? `"${searchTerm}"` : (t.categories[activeCategory.toLowerCase()] || activeCategory)}</h2>
+            </div>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-10 md:gap-8">
+              {products.map((item) => <ProductCard key={item.id} item={item} />)}
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 };
