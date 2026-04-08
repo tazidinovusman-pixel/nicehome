@@ -1,15 +1,14 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../api/supabaseClient';
-import { LanguageContext } from '../App'; // App.jsx ичинен импорттоо
+import { LanguageContext } from '../App';
 import { useCart } from '../context/CartContext';
-import { ChevronLeft, ShoppingBag, Calendar, Heart, Clock } from 'lucide-react';
+import { ChevronLeft, ShoppingBag, Calendar, Heart, Clock, AlignLeft } from 'lucide-react';
 
 const ProductDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
 
-    // Контекстти алуу
     const { darkMode, user, lang, translations } = useContext(LanguageContext);
     const { addToCart, toggleFavorite, favorites } = useCart();
 
@@ -30,7 +29,7 @@ const ProductDetail = () => {
                 .single();
 
             if (error) {
-                console.error("Товарды жүктөөдө ката:", error);
+                console.error("Error loading product:", error);
                 return;
             }
 
@@ -57,7 +56,7 @@ const ProductDetail = () => {
     };
 
     const formatDate = (dateString) => {
-        if (!dateString) return t.loading || "Жакында";
+        if (!dateString) return t.loading;
         const date = new Date(dateString);
         return date.toLocaleDateString(lang === 'RU' ? 'ru-RU' : 'ky-KG');
     };
@@ -81,7 +80,7 @@ const ProductDetail = () => {
                     >
                         <ChevronLeft size={20} /> {t.back}
                     </button>
-                    {/* HEADER NAVIGATION ИЧИНДЕГИ ЖҮРӨКЧӨ */}
+                    
                     <button
                         onClick={() => !user ? navigate('/auth') : toggleFavorite(product)}
                         className={`p-4 rounded-full transition-all active:scale-90 shadow-2xl ${isFavorite
@@ -95,8 +94,7 @@ const ProductDetail = () => {
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
                     {/* IMAGE SECTION */}
-                    <div className={`rounded-[3rem] md:rounded-[4rem] p-8 md:p-20 flex items-center justify-center relative overflow-hidden group min-h-[400px] ${darkMode ? 'bg-slate-900' : 'bg-slate-50 shadow-2xl shadow-slate-200'
-                        }`}>
+                    <div className={`rounded-[3rem] md:rounded-[4rem] p-8 md:p-20 flex items-center justify-center relative overflow-hidden group min-h-[400px] ${darkMode ? 'bg-slate-900' : 'bg-slate-50 shadow-2xl shadow-slate-200'}`}>
                         <img
                             src={product.image_url}
                             className="w-full h-auto max-h-[500px] object-contain z-10 transform group-hover:scale-110 transition-transform duration-1000"
@@ -121,20 +119,30 @@ const ProductDetail = () => {
                             {product.name}
                         </h1>
 
-                        <div className="flex flex-col gap-4 mb-8 md:mb-10">
+                        <div className="flex flex-col gap-4 mb-6">
                             <span className="text-5xl md:text-6xl font-black text-indigo-600">
                                 {formatPrice(product.price)} <span className="text-xl md:text-2xl">{t.price_tag}</span>
                             </span>
+                        </div>
 
-                            <div className="flex flex-wrap gap-4 md:gap-6">
-                                <div className="flex items-center gap-2 text-slate-400 text-[10px] font-black uppercase tracking-widest">
-                                    <Calendar size={16} className="text-indigo-500" />
-                                    {t.model}: {product.year || 2026}
-                                </div>
-                                <div className="flex items-center gap-2 text-slate-400 text-[10px] font-black uppercase tracking-widest">
-                                    <Clock size={16} className="text-emerald-500" />
-                                    {t.date}: {formatDate(product.created_at)}
-                                </div>
+                        {/* DESCRIPTION SECTION (Сүрөттөмө) */}
+                        <div className="mb-8 p-6 rounded-[2rem] bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800">
+                            <div className="flex items-center gap-2 mb-3 text-indigo-500 font-black uppercase text-[10px] tracking-widest">
+                                <AlignLeft size={16} /> {t.description || "Description / Сүрөттөмө"}
+                            </div>
+                            <p className="text-slate-500 dark:text-slate-400 leading-relaxed text-sm md:text-base italic">
+                                {product.description || (lang === 'RU' ? "Описание товара временно отсутствует." : "Товар жөнүндө маалымат убактылуу жок.")}
+                            </p>
+                        </div>
+
+                        <div className="flex flex-wrap gap-4 md:gap-6 mb-10">
+                            <div className="flex items-center gap-2 text-slate-400 text-[10px] font-black uppercase tracking-widest">
+                                <Calendar size={16} className="text-indigo-500" />
+                                {t.model}: {product.year || 2026}
+                            </div>
+                            <div className="flex items-center gap-2 text-slate-400 text-[10px] font-black uppercase tracking-widest">
+                                <Clock size={16} className="text-emerald-500" />
+                                {t.date}: {formatDate(product.created_at)}
                             </div>
                         </div>
 
