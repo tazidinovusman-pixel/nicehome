@@ -31,7 +31,9 @@ const Bedroom = ({ products, ProductCard, setActiveCategory, t }) => {
           <ProductCard key={item.id} item={item} />
         ))}
       </div>
+      
     </section>
+    
   );
 };
 

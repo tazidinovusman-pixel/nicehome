@@ -47,11 +47,14 @@ const CategoryBar = ({ activeCategory, setActiveCategory }) => {
               </div>
               <span className={`text-[9px] font-black uppercase tracking-widest ${activeCategory === cat.name ? 'text-indigo-600' : (darkMode ? 'text-slate-500' : 'text-slate-900')}`}>
                 {t[cat.key]}
+                
               </span>
             </button>
           ))}
+          
         </div>
       </div>
+      
     </div>
   );
 };
