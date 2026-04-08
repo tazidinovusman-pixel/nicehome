@@ -107,25 +107,57 @@ const Home = () => {
     fetchProducts();
   }, [categoryParam, searchTerm]);
 
-  const ProductCard = ({ item }) => (
+ const ProductCard = ({ item }) => (
     <div className="group">
-      <div className={`aspect-[4/5] mb-4 relative flex items-center justify-center p-4 overflow-hidden rounded-3xl transition-all ${darkMode ? 'bg-slate-900' : 'bg-slate-50'}`}>
-        <img src={item.image_url} alt={item.name} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" />
-        <button onClick={() => !user ? navigate('/auth') : toggleFavorite(item)} className="absolute top-4 right-4 p-2 bg-white/50 backdrop-blur-md rounded-full">
+      {/* Сүрөт бөлүгү - басканда жеке баракка өтөт */}
+      <div 
+        onClick={() => navigate(`/product/${item.id}`)} 
+        className={`aspect-[4/5] mb-4 relative flex items-center justify-center p-4 overflow-hidden rounded-3xl transition-all cursor-pointer shadow-sm hover:shadow-xl ${darkMode ? 'bg-slate-900 border border-slate-800' : 'bg-slate-50'}`}
+      >
+        <img src={item.image_url} alt={item.name} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" />
+        
+        {/* "ЖАҢЫ" белгиси - эгер базада is_new true болсо гана чыгат */}
+        {item.is_new && (
+          <div className="absolute top-4 left-4 bg-green-500 text-white text-[8px] font-black px-2 py-1 rounded-lg uppercase tracking-widest shadow-lg">
+            New
+          </div>
+        )}
+
+        {/* Favorite баскычы - бул баракка өткөрбөйт (e.stopPropagation) */}
+        <button 
+          onClick={(e) => {
+            e.stopPropagation(); // Баракка өтүп кетпеши үчүн
+            !user ? navigate('/auth') : toggleFavorite(item);
+          }} 
+          className="absolute top-4 right-4 p-2 bg-white/70 backdrop-blur-md rounded-full hover:bg-white transition-all shadow-sm"
+        >
           <Heart className={`w-4 h-4 ${favorites?.some(f => f.id === item.id) ? 'fill-red-500 text-red-500' : 'text-slate-400'}`} />
         </button>
-        <button onClick={() => !user ? navigate('/auth') : addToCart(item)} className="absolute bottom-4 right-4 bg-slate-900 text-white p-3 shadow-lg rounded-2xl active:scale-90 transition-all">
+
+        {/* Себетке кошуу баскычы */}
+        <button 
+          onClick={(e) => {
+            e.stopPropagation(); // Баракка өтүп кетпеши үчүн
+            !user ? navigate('/auth') : addToCart(item);
+          }} 
+          className="absolute bottom-4 right-4 bg-slate-900 text-white p-3 shadow-lg rounded-2xl active:scale-90 opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0"
+        >
           <Plus className="w-5 h-5" />
         </button>
       </div>
-      <div className="px-1">
+
+      {/* Төмөнкү текст бөлүгү - басканда жеке баракка өтөт */}
+      <div className="px-1 cursor-pointer" onClick={() => navigate(`/product/${item.id}`)}>
         <p className="text-[8px] uppercase tracking-[0.2em] text-slate-400 mb-1">{item.category}</p>
-        <h2 className="text-sm font-bold line-clamp-1">{item.name}</h2>
-        <p className="text-sm font-black mt-1 text-indigo-600">{item.price} сом</p>
+        <h2 className="text-sm font-bold line-clamp-1 group-hover:text-indigo-600 transition-colors">{item.name}</h2>
+        <div className="flex items-center justify-between mt-1">
+          <p className="text-sm font-black text-indigo-600">{item.price} сом</p>
+          {/* Бул жерде жылды көрсөтүп койсоңуз болот (милдеттүү эмес) */}
+          <p className="text-[9px] text-slate-400 font-bold">{item.year}</p>
+        </div>
       </div>
     </div>
   );
-
   if (loading) return (
     <div className="flex justify-center items-center h-96">
       <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
