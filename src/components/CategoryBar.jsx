@@ -30,6 +30,7 @@ const CategoryBar = ({ activeCategory, setActiveCategory }) => {
     }
   };
 
+
   return (
     /* БУЛ ЖЕРДЕГИ ӨЗГӨРТҮҮ: top-0 жана sticky */
     <div className={`sticky top-0 z-50 w-full border-b backdrop-blur-xl transition-all ${darkMode ? 'bg-slate-950/90 border-slate-800' : 'bg-white/90 border-slate-50'}`}>

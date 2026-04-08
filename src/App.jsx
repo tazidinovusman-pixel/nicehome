@@ -8,10 +8,10 @@ import Profile from './pages/Home/Profile';
 import Auth from './Auth/Auth';
 import ProductDetail from './pages/ProductDetail';
 import { CartProvider, useCart } from './context/CartContext';
-import { 
-  Heart, ShoppingBag, User, Sun, Moon, ShieldCheck, Menu, X, 
-  Search, Sofa, UtensilsCrossed, BedDouble, Bath, Baby, 
-  DoorOpen, Laptop, TreePine, LayoutGrid 
+import {
+  Heart, ShoppingBag, User, Sun, Moon, ShieldCheck, Menu, X,
+  Search, Sofa, UtensilsCrossed, BedDouble, Bath, Baby,
+  DoorOpen, Laptop, TreePine, LayoutGrid
 } from 'lucide-react';
 import { supabase } from './api/supabaseClient';
 import Footer from './components/Footer';
@@ -22,26 +22,26 @@ import ScrollToTop from './components/ScrollToTop';
 export const LanguageContext = createContext();
 
 const translations = {
-  KG: { 
-    shop: "Дүкөн", admin: "Админ", profile: "Профиль", login: "Кирүү", search: "Издөө...", 
-    back: "Артка", new_model: "Жаңы модель", price_tag: "сом", model: "Модель", 
-    date: "Дата", add_to_cart: "Себетке кошуу", similar_products: "Окшош товарлар", 
+  KG: {
+    shop: "Дүкөн", admin: "Админ", profile: "Профиль", login: "Кирүү", search: "Издөө...",
+    back: "Артка", new_model: "Жаңы модель", price_tag: "сом", model: "Модель",
+    date: "Дата", add_to_cart: "Себетке кошуу", similar_products: "Окшош товарлар",
     loading: "Издөөдө...",
-    categories: { all: "Баары", living: "Конок бөлмө", kitchen: "Ашкана", bedroom: "Уктоочу бөлмө", bathroom: "Ванна", kids: "Балдар бөлмөсү", hallway: "Кире бериш", office: "Иш бөлмө", garden: "Бакча" } 
+    categories: { all: "Баары", living: "Конок бөлмө", kitchen: "Ашкана", bedroom: "Уктоочу бөлмө", bathroom: "Ванна", kids: "Балдар бөлмөсү", hallway: "Кире бериш", office: "Иш бөлмө", garden: "Бакча" }
   },
-  RU: { 
-    shop: "Магазин", admin: "Админ", profile: "Профиль", login: "Войти", search: "Поиск...", 
-    back: "Назад", new_model: "Новая модель", price_tag: "сом", model: "Модель", 
-    date: "Дата", add_to_cart: "Добавить в корзину", similar_products: "Похожие товары", 
+  RU: {
+    shop: "Магазин", admin: "Админ", profile: "Профиль", login: "Войти", search: "Поиск...",
+    back: "Назад", new_model: "Новая модель", price_tag: "сом", model: "Модель",
+    date: "Дата", add_to_cart: "Добавить в корзину", similar_products: "Похожие товары",
     loading: "Загрузка...",
-    categories: { all: "Все", living: "Гостиная", kitchen: "Кухня", bedroom: "Спальня", bathroom: "Ванная", kids: "Детская", hallway: "Прихожая", office: "Кабинет", garden: "Сад" } 
+    categories: { all: "Все", living: "Гостиная", kitchen: "Кухня", bedroom: "Спальня", bathroom: "Ванная", kids: "Детская", hallway: "Прихожая", office: "Кабинет", garden: "Сад" }
   },
-  EN: { 
-    shop: "Store", admin: "Admin", profile: "Profile", login: "Login", search: "Search...", 
-    back: "Back", new_model: "New Model", price_tag: "som", model: "Model", 
-    date: "Date", add_to_cart: "Add to cart", similar_products: "Similar products", 
+  EN: {
+    shop: "Store", admin: "Admin", profile: "Profile", login: "Login", search: "Search...",
+    back: "Back", new_model: "New Model", price_tag: "som", model: "Model",
+    date: "Date", add_to_cart: "Add to cart", similar_products: "Similar products",
     loading: "Loading...",
-    categories: { all: "All", living: "Living Room", kitchen: "Kitchen", bedroom: "Bedroom", bathroom: "Bathroom", kids: "Kids Room", hallway: "Hallway", office: "Office", garden: "Garden" } 
+    categories: { all: "All", living: "Living Room", kitchen: "Kitchen", bedroom: "Bedroom", bathroom: "Bathroom", kids: "Kids Room", hallway: "Hallway", office: "Office", garden: "Garden" }
   }
 };
 
@@ -69,9 +69,14 @@ const Navbar = ({ t, darkMode, setDarkMode, setIsMenuOpen, user, ADMIN_EMAIL }) 
             <button onClick={() => setIsMenuOpen(true)} className="p-2 -ml-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all">
               <Menu size={24} />
             </button>
-            <Link to="/" className="flex flex-col">
-              <span className="text-base md:text-xl font-black tracking-tighter italic uppercase">
-                Nice<span className="text-indigo-600">Home</span>
+            <Link to="/" className="flex flex-col items-start group">
+              <span className="text-lg md:text-2xl font-extrabold tracking-tight italic uppercase transition-all duration-300 group-hover:tracking-wide">
+                <span className="bg-gradient-to-r from-blue-500 via-indigo-600 to-blue-900 bg-clip-text text-transparent">
+                  Nice
+                </span>
+                <span className="text-blue-900 group-hover:text-blue-600 transition-colors duration-300">
+                  Home
+                </span>
               </span>
             </Link>
           </div>
@@ -111,19 +116,19 @@ const Navbar = ({ t, darkMode, setDarkMode, setIsMenuOpen, user, ADMIN_EMAIL }) 
         <div className="pb-3 px-1 md:px-0">
           <div className={`flex items-center gap-2 px-4 py-2 rounded-2xl border transition-all ${darkMode ? 'bg-slate-900 border-slate-800 focus-within:border-indigo-500' : 'bg-slate-50 border-slate-100 focus-within:border-indigo-400'}`}>
             <Search size={16} className="text-slate-400 flex-shrink-0" />
-            <form 
-              className="w-full" 
+            <form
+              className="w-full"
               onSubmit={(e) => {
                 e.preventDefault();
                 const query = e.target.search.value;
                 navigate(`/?search=${query}`);
               }}
             >
-              <input 
+              <input
                 name="search"
-                type="text" 
-                placeholder={t.search} 
-                className="bg-transparent outline-none text-sm w-full placeholder:text-slate-500" 
+                type="text"
+                placeholder={t.search}
+                className="bg-transparent outline-none text-sm w-full placeholder:text-slate-500"
               />
             </form>
           </div>
@@ -165,16 +170,16 @@ function App() {
     <LanguageContext.Provider value={{ user, lang, setLang, translations, darkMode, setDarkMode }}>
       <CartProvider>
         <Router>
-          <ScrollToTop /> 
+          <ScrollToTop />
           <div className={`min-h-screen flex flex-col transition-colors duration-300 ${darkMode ? 'bg-slate-950 text-white' : 'bg-white text-slate-900'}`}>
-        
-            <Navbar 
-              t={t} 
-              darkMode={darkMode} 
-              setDarkMode={setDarkMode} 
-              setIsMenuOpen={setIsMenuOpen} 
-              user={user} 
-              ADMIN_EMAIL={ADMIN_EMAIL} 
+
+            <Navbar
+              t={t}
+              darkMode={darkMode}
+              setDarkMode={setDarkMode}
+              setIsMenuOpen={setIsMenuOpen}
+              user={user}
+              ADMIN_EMAIL={ADMIN_EMAIL}
             />
 
             {/* --- БУРГЕР МЕНЮ --- */}
@@ -188,7 +193,7 @@ function App() {
                       <X size={24} />
                     </button>
                   </div>
-                  
+
                   <div className="p-6">
                     <div className="flex gap-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl border border-transparent dark:border-slate-700">
                       {['KG', 'RU', 'EN'].map((l) => (
@@ -206,7 +211,7 @@ function App() {
                   <div className="flex-grow p-4 space-y-1">
                     <p className="text-[10px] font-bold uppercase px-4 mb-4 opacity-40 tracking-widest">Категориялар</p>
                     {menuCategories.map((cat) => (
-                      <Link 
+                      <Link
                         key={cat.key}
                         to={cat.key === 'all' ? '/' : `/?category=${cat.key}`}
                         onClick={() => setIsMenuOpen(false)}
