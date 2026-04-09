@@ -140,21 +140,40 @@ const Navbar = ({ t, darkMode, setDarkMode, setIsMenuOpen, user, ADMIN_EMAIL }) 
 
 function App() {
   const [user, setUser] = useState(null);
+  const [userRole, setUserRole] = useState('user'); // Жаңы сап: ролду сактоо
   const [lang, setLang] = useState('KG');
   const [darkMode, setDarkMode] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const ADMIN_EMAIL = "adminj7@gmail.com";
 
   useEffect(() => {
+    const getProfile = async (sessionUser) => {
+      if (sessionUser) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', sessionUser.id)
+          .single();
+        setUserRole(data?.role || 'user');
+      } else {
+        setUserRole('user');
+      }
+    };
+
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
+      const sessionUser = session?.user ?? null;
+      setUser(sessionUser);
+      getProfile(sessionUser); // Ролду текшерүү
     });
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+      const sessionUser = session?.user ?? null;
+      setUser(sessionUser);
+      getProfile(sessionUser); // Ролду текшерүү
     });
+
     return () => subscription.unsubscribe();
   }, []);
-
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add('dark');
@@ -179,8 +198,14 @@ function App() {
               setDarkMode={setDarkMode}
               setIsMenuOpen={setIsMenuOpen}
               user={user}
-              ADMIN_EMAIL={ADMIN_EMAIL}
+              userRole={userRole} // Жаңы параметр
             />
+            
+            {(userRole === 'admin' || userRole === 'seller') && (
+              <Link to="/admin" className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-colors">
+                <ShieldCheck size={18} className="animate-pulse" />
+              </Link>
+            )}
 
             {/* --- БУРГЕР МЕНЮ --- */}
             {isMenuOpen && (
@@ -234,7 +259,8 @@ function App() {
                 <Route path="/favorites" element={<Favorites />} />
                 <Route path="/profile" element={user ? <Profile /> : <Navigate to="/auth" />} />
                 <Route path="/product/:id" element={<ProductDetail />} />
-                <Route path="/admin" element={user?.email === ADMIN_EMAIL ? <Admin /> : <Navigate to="/" />} />
+                {/* <Route path="/admin" element={user?.email === ADMIN_EMAIL ? <Admin /> : <Navigate to="/" />} /> */}
+                <Route path="/admin" element={(userRole === 'admin' || userRole === 'seller') ? <Admin /> : <Navigate to="/" />} />
               </Routes>
             </main>
 

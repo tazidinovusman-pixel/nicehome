@@ -20,7 +20,7 @@ const Garden = ({ products, ProductCard, setActiveCategory, t }) => {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
         {items.map(item => <ProductCard key={item.id} item={item} />)}
       </div>
-         <ServiceBanner title="Ландшафт дизайнери" />
+        
     </section>
   );
 };
