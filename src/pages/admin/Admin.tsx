@@ -3,7 +3,7 @@ import { supabase } from "../../api/supabaseClient";
 import { 
   Trash2, PackagePlus, Tag, Banknote, Image as ImageIcon, 
   PlusCircle, Users, LayoutDashboard, Menu, X, Package, LogOut,
-  FileText, Calendar, Sparkles
+  FileText, Calendar, Sparkles, Mail
 } from 'lucide-react';
 
 interface Product {
@@ -32,18 +32,18 @@ const Admin = () => {
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
-  const [customers, setCustomers] = useState([]);
+  const [users, setUsers] = useState<any[]>([]); // Бул жерди users деп өзгөрттүк
 
   const fetchData = async () => {
     const { data: items } = await supabase.from('items').select('*').order('id', { ascending: false });
     setProducts(items || []);
     const { data: profiles } = await supabase.from('profiles').select('*');
-    setCustomers(profiles || []);
+    setUsers(profiles || []); // Бул жерди setUsers деп өзгөрттүк
   };
 
   useEffect(() => { fetchData(); }, []);
 
-  const handleAddProduct = async (e) => {
+  const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     
@@ -61,7 +61,6 @@ const Admin = () => {
       alert('Ката: ' + error.message);
     } else {
       alert('Товар ийгиликтүү кошулду!');
-      // Форманы тазалоо
       setName(''); setPrice(''); setImageUrl(''); 
       setDescription(''); setYear('2026'); setIsNew(false);
       fetchData();
@@ -69,7 +68,7 @@ const Admin = () => {
     setIsSubmitting(false);
   };
 
-  const handleDeleteProduct = async (id) => {
+  const handleDeleteProduct = async (id: number) => {
     if (window.confirm("Бул товарды өчүрүүнү каалайсызбы?")) {
       const { error } = await supabase.from('items').delete().eq('id', id);
       if (!error) fetchData();
@@ -123,7 +122,6 @@ const Admin = () => {
               </div>
               
               <form onSubmit={handleAddProduct} className="space-y-6">
-                {/* Аталышы жана Баасы */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="relative">
                     <Tag className="absolute left-4 top-4 text-slate-400" size={18} />
@@ -135,7 +133,6 @@ const Admin = () => {
                   </div>
                 </div>
 
-                {/* Категория жана Жыл */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="relative">
                     <PlusCircle className="absolute left-4 top-4 text-slate-400" size={18} />
@@ -156,19 +153,16 @@ const Admin = () => {
                   </div>
                 </div>
 
-                {/* Сүрөттөмө (Description) */}
                 <div className="relative">
                   <FileText className="absolute left-4 top-4 text-slate-400" size={18} />
                   <textarea className="w-full pl-12 pr-4 py-4 bg-slate-50 rounded-2xl outline-none ring-1 ring-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all" placeholder="Товардын толук сүрөттөмөсү..." value={description} onChange={(e) => setDescription(e.target.value)} rows={3} required />
                 </div>
 
-                {/* Сүрөт URL */}
                 <div className="relative">
                   <ImageIcon className="absolute left-4 top-4 text-slate-400" size={18} />
                   <input className="w-full pl-12 pr-4 py-4 bg-slate-50 rounded-2xl outline-none ring-1 ring-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all" placeholder="Сүрөт URL (https://...)" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} required />
                 </div>
 
-                {/* Жаңы товар же эски (Switch) */}
                 <div onClick={() => setIsNew(!isNew)} className={`flex items-center justify-between p-4 rounded-2xl cursor-pointer transition-all border-2 ${isNew ? 'bg-indigo-50 border-indigo-200' : 'bg-slate-50 border-transparent'}`}>
                   <div className="flex items-center gap-3">
                     <Sparkles className={isNew ? "text-indigo-600" : "text-slate-400"} />
@@ -179,7 +173,6 @@ const Admin = () => {
                   </div>
                 </div>
 
-                {/* Preview */}
                 {imageUrl && (
                   <div className="p-4 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200 flex flex-col items-center">
                     <img src={imageUrl} alt="Preview" className="h-32 object-contain mix-blend-multiply" onError={(e) => e.currentTarget.src="https://placehold.co/200x200?text=Error"} />
@@ -202,7 +195,7 @@ const Admin = () => {
                   <div key={item.id} className="bg-white p-5 rounded-[2.5rem] border border-slate-100 flex items-center justify-between shadow-sm hover:shadow-md transition-all group">
                     <div className="flex items-center gap-4">
                       <div className="w-20 h-20 bg-slate-50 rounded-3xl p-2 flex items-center justify-center">
-                        <img src={item.image_url} className="max-w-full max-h-full object-contain mix-blend-multiply" />
+                        <img src={item.image_url} className="max-w-full max-h-full object-contain mix-blend-multiply" alt={item.name} />
                       </div>
                       <div>
                         <p className="font-bold text-slate-800 text-sm">{item.name}</p>
@@ -222,7 +215,39 @@ const Admin = () => {
             </div>
           )}
 
-          {/* ... Клиенттер тизмеси (Users Tab) кала берет */}
+         {activeTab === 'users' && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between mb-8">
+                <h3 className="text-2xl font-black italic uppercase">Клиенттер ({users.length})</h3>
+              </div>
+              <div className="grid grid-cols-1 gap-4">
+                {users.length > 0 ? (
+                  users.map((u) => (
+                    <div key={u.id} className="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm flex items-center justify-between group">
+                      <div className="flex items-center gap-5">
+                        <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 group-hover:text-indigo-600">
+                          <Users size={24} />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-1.5 text-slate-700">
+                            <Mail size={16} className="text-slate-400" />
+                            <p className="font-bold text-sm">{u.email}</p>
+                          </div>
+                        </div>
+                      </div>
+                      <button onClick={() => handleDeleteUser(u.id)} className="p-4 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all">
+                        <Trash2 size={22} />
+                      </button>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-20 bg-slate-50 rounded-[3rem]">
+                    <p className="text-slate-400 italic">Азырынча эч ким каттала элек</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </main>
       </div>
       {isSidebarOpen && <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 lg:hidden" onClick={() => setIsSidebarOpen(false)} />}
