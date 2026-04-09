@@ -71,7 +71,6 @@ const ProductDetail = () => {
     return (
         <div className={`min-h-screen p-4 md:p-12 transition-colors duration-500 ${darkMode ? 'bg-slate-950 text-white' : 'bg-white text-slate-900'}`}>
             <div className="max-w-6xl mx-auto">
-
                 {/* HEADER NAVIGATION */}
                 <div className="flex justify-between items-center mb-8 md:mb-12">
                     <button
@@ -81,16 +80,20 @@ const ProductDetail = () => {
                         <ChevronLeft size={20} /> {t.back}
                     </button>
 
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            !user ? navigate('/auth') : addToCart(item);
-                        }}
-                        // БУЛ ЖЕРДЕ opacity-0 ЖАНА group-hover АЛЫП САЛЫНДЫ
-                        className="absolute bottom-4 right-4 bg-slate-900 text-white p-3 shadow-lg rounded-2xl active:scale-90 transition-all transform"
-                    >
-                        <Heart size={24} fill={isFavorite ? "currentColor" : "none"} />
-                    </button>
+                    <div className="flex items-center gap-4"> {/* Баскычтарды бир катарга тизүү үчүн div коштук */}
+
+
+                        {/* ЖҮРӨКЧӨ (ИЗБРАННОЕ) */}
+                        <button
+                            onClick={() => !user ? navigate('/auth') : toggleFavorite(product)}
+                            className={`p-4 rounded-full transition-all active:scale-90 shadow-2xl ${isFavorite
+                                ? 'bg-red-500 text-white shadow-red-500/40'
+                                : 'bg-slate-100 dark:bg-slate-900 text-slate-400 hover:text-red-500'
+                                }`}
+                        >
+                            <Heart size={24} fill={isFavorite ? "currentColor" : "none"} />
+                        </button>
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
