@@ -25,42 +25,43 @@ const ProductDetail = () => {
     // 1. ПИКИРЛЕРДИ БАЗАДАН АЛЫП КЕЛҮҮ ФУНКЦИЯСЫ
     // 1. ПИКИРЛЕРДИ АЛЫП КЕЛҮҮ (ОҢДОЛДУ)
     // 1. ПИКИРЛЕРДИ АЛЫП КЕЛҮҮ (ОҢДОЛДУ)
-   // 1. АЛЫП КЕЛҮҮ ФУНКЦИЯСЫ
+    // 1. АЛЫП КЕЛҮҮ ФУНКЦИЯСЫ
+    // 1. Пикирлерди алуу (Сан же Текст экенин тактайбыз)
     const fetchReviews = async () => {
         if (!id) return;
         const { data, error } = await supabase
             .from('reviews')
             .select('*')
-            .eq('product_id', id)
+            .eq('product_id', id) // Бул жерде базадагы ID менен дал келиши керек
             .order('created_at', { ascending: false });
 
-        if (!error && data) {
-            setReviews(data);
+        if (!error) {
+            setReviews(data || []);
         }
     };
 
-    // 2. ЖӨНӨТҮҮ ФУНКЦИЯСЫ
+    // 2. Жаңы пикир кошуу
     const handleReview = async () => {
         if (!newReview.trim()) return;
 
-        const reviewData = {
-            product_id: id,
-            user_name: user?.email || "Аноним",
-            text: newReview
-        };
-
         const { data, error } = await supabase
             .from('reviews')
-            .insert([reviewData])
+            .insert([{
+                product_id: id,
+                user_name: user?.email || "Клиент", // Эгер кирбесе "Клиент" деп жазылат
+                text: newReview
+            }])
             .select();
 
         if (error) {
             alert("Ката: " + error.message);
-        } else if (data && data.length > 0) {
+        } else if (data) {
             setReviews((prev) => [data[0], ...prev]);
             setNewReview("");
         }
-    }; // <--- handleReview ушул жерден бүттү
+    };
+
+
 
     // 3. ӨЧҮРҮҮ ФУНКЦИЯСЫ (handleReview'ден БӨЛӨК ТУРУШУ КЕРЕК)
     const deleteReview = async (reviewId) => {
@@ -174,43 +175,66 @@ const ProductDetail = () => {
                     </div>
                 </div>
 
-                <div className="space-y-6">
-                    {reviews.length > 0 ? (
-                        reviews.map((rev, index) => (
-                            <div key={index} className="p-6 rounded-[2rem] bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 animate-in fade-in slide-in-from-bottom-2">
+                {/* ПИКИРЛЕР (REVIEWS) SECTION */}
+                <div className="mt-20 border-t dark:border-slate-800 pt-16">
+                    <h2 className="text-3xl font-black italic uppercase mb-10 tracking-tighter">
+                        Пикирлер ({reviews.length})
+                    </h2>
 
-                                {/* БУЛ ЖЕРГЕ flex КОШТУК: Текст солдо, Баскыч оңдо болушу үчүн */}
-                                <div className="flex justify-between items-start gap-4">
-                                    <div className="flex flex-col flex-1">
-                                        <div className="flex items-center gap-3 mb-2">
-                                            <div className="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-[10px]">
-                                                {rev.user_name?.charAt(0).toUpperCase()}
+                    {/* ПИКИР ЖАЗУУ БӨЛҮГҮ (Эми баарына көрүнөт) */}
+                    <div className="mb-12 flex flex-col gap-4">
+                        <textarea
+                            value={newReview}
+                            onChange={(e) => setNewReview(e.target.value)}
+                            placeholder="Оюңузду калтырыңыз..."
+                            className="w-full p-6 rounded-[2rem] bg-slate-50 dark:bg-slate-900 border-none outline-none focus:ring-2 focus:ring-indigo-500 transition-all italic text-slate-900 dark:text-white"
+                            rows={3}
+                        />
+                        <button
+                            onClick={handleReview}
+                            disabled={!newReview.trim()}
+                            className="self-end px-10 py-4 bg-indigo-600 text-white rounded-full font-black uppercase text-xs tracking-widest hover:bg-indigo-700 transition-all disabled:opacity-50"
+                        >
+                            Жөнөтүү
+                        </button>
+                    </div>
+
+                    {/* ПИКИРЛЕРДИН ТИЗМЕСИ */}
+                    <div className="space-y-6">
+                        {reviews.length > 0 ? (
+                            reviews.map((rev, index) => (
+                                <div key={index} className="p-6 rounded-[2rem] bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 animate-in fade-in slide-in-from-bottom-2">
+                                    <div className="flex justify-between items-start gap-4">
+                                        <div className="flex flex-col flex-1">
+                                            <div className="flex items-center gap-3 mb-2">
+                                                <div className="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-[10px]">
+                                                    {rev.user_name?.charAt(0).toUpperCase()}
+                                                </div>
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                                    {rev.user_name?.split('@')[0]}
+                                                </span>
                                             </div>
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                                                {rev.user_name?.split('@')[0]}
-                                            </span>
+                                            <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
+                                                {rev.text}
+                                            </p>
                                         </div>
-                                        <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
-                                            {rev.text}
-                                        </p>
+
+                                        {/* ӨЧҮРҮҮ БАСКЫЧЫ */}
+                                        {(user?.email === rev.user_name || user?.email === 'admin@gmail.com') && (
+                                            <button
+                                                onClick={() => deleteReview(rev.id)}
+                                                className="text-[10px] font-black uppercase text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 p-2 rounded-xl transition-all flex-shrink-0"
+                                            >
+                                                Өчүрүү
+                                            </button>
+                                        )}
                                     </div>
-
-                                    {/* ӨЧҮРҮҮ БАСКЫЧЫ: Төмөндөгү шарт аткарылса гана көрүнөт */}
-                                    {(user?.email === rev.user_name || user?.email === 'admin@gmail.com') && (
-                                        <button
-                                            onClick={() => deleteReview(rev.id)}
-                                            className="text-[10px] font-black uppercase text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 p-2 rounded-xl transition-all flex-shrink-0"
-                                        >
-                                            Өчүрүү
-                                        </button>
-                                    )}
                                 </div>
-
-                            </div>
-                        ))
-                    ) : (
-                        <p className="text-slate-400 italic text-sm">Азырынча пикирлер жок.</p>
-                    )}
+                            ))
+                        ) : (
+                            <p className="text-slate-400 italic text-sm">Азырынча пикирлер жок.</p>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
