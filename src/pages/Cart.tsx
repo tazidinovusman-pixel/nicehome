@@ -2,12 +2,14 @@ import React from 'react';
 import { useCart } from '../context/CartContext';
 import { Trash2, ShoppingBag, ArrowLeft, CreditCard, Plus, Minus } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
 
 const Cart = () => {
   const { cartItems, removeFromCart, clearCart, updateQuantity } = useCart();
-
+const navigate = useNavigate();
   // Жалпы сумма (Баасы * Саны)
-  const totalPrice = cartItems?.reduce((acc: number, item: any) => 
+  const totalPrice = cartItems?.reduce((acc: number, item: any) =>
     acc + (Number(item.price) * (item.quantity || 1)), 0) || 0;
 
   if (!cartItems || cartItems.length === 0) {
@@ -30,16 +32,16 @@ const Cart = () => {
               <div className="w-24 h-32 md:w-32 md:h-40 bg-[#F6F6F6] flex-shrink-0 flex items-center justify-center p-4">
                 <img src={item.image_url} className="w-full h-full object-contain mix-blend-multiply" alt={item.name} />
               </div>
-              
+
               <div className="ml-6 md:ml-8 flex-grow">
                 <h3 className="text-xs md:text-sm font-medium text-slate-800 uppercase tracking-wide">{item.name}</h3>
                 <p className="text-sm font-bold text-slate-900 mb-4">{item.price} сом</p>
-                
+
                 {/* ПЛЮС-МИНУС БЛОГУ */}
                 <div className="flex items-center gap-3">
-                  <button onClick={() => updateQuantity(item.id, -1)} className="p-1 hover:bg-slate-100 rounded border"><Minus size={14}/></button>
+                  <button onClick={() => updateQuantity(item.id, -1)} className="p-1 hover:bg-slate-100 rounded border"><Minus size={14} /></button>
                   <span className="text-sm font-bold w-4 text-center">{item.quantity || 1}</span>
-                  <button onClick={() => updateQuantity(item.id, 1)} className="p-1 hover:bg-slate-100 rounded border"><Plus size={14}/></button>
+                  <button onClick={() => updateQuantity(item.id, 1)} className="p-1 hover:bg-slate-100 rounded border"><Plus size={14} /></button>
                 </div>
               </div>
 
@@ -54,15 +56,18 @@ const Cart = () => {
             <div className="space-y-6 mb-10">
               <div className="flex justify-between text-sm text-slate-500">
                 <span>Жалпы саны:</span>
-                <span className="font-medium text-slate-900">{cartItems.reduce((a:any, b:any) => a + (b.quantity || 1), 0)} шт</span>
+                <span className="font-medium text-slate-900">{cartItems.reduce((a: any, b: any) => a + (b.quantity || 1), 0)} шт</span>
               </div>
               <div className="flex justify-between border-t border-slate-200 pt-6">
                 <span className="text-sm font-bold text-slate-900">Жалпы сумма:</span>
                 <p className="text-xl font-black text-slate-900">{totalPrice} сом</p>
               </div>
             </div>
-            <button onClick={() => { alert("Заказ кабыл алынды!"); clearCart(); }} className="w-full bg-slate-900 text-white py-5 text-xs uppercase tracking-[0.2em] font-bold hover:bg-slate-800 transition-all flex items-center justify-center gap-3">
-              <CreditCard className="w-4 h-4" /> Заказды каттоо
+            <button
+              onClick={() => navigate('/checkout')}
+              className="w-full py-4 bg-indigo-600 text-white font-black rounded-2xl uppercase"
+            >
+              Заказды каттоо
             </button>
           </div>
         </div>

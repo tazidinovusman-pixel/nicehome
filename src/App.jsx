@@ -8,6 +8,7 @@ import Profile from './pages/Home/Profile';
 import Auth from './Auth/Auth';
 import ProductDetail from './pages/ProductDetail';
 import { CartProvider, useCart } from './context/CartContext';
+
 import {
   Heart, ShoppingBag, User, Sun, Moon, ShieldCheck, Menu, X,
   Search, Sofa, UtensilsCrossed, BedDouble, Bath, Baby,
@@ -16,6 +17,7 @@ import {
 import { supabase } from './api/supabaseClient';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
+import Checkout from './pages/Home/Checkout';
 
 // МААНИЛҮҮ: Контекстти өзүнчө файлдан алуу керек (Circular Dependency болбошу үчүн)
 // Бирок азырынча App ичинде калтырсаңыз, импортту өчүрүп, төмөнкүдөй кылыңыз:
@@ -190,6 +192,7 @@ function App() {
       <CartProvider>
         <Router>
           <ScrollToTop />
+       
           <div className={`min-h-screen flex flex-col transition-colors duration-300 ${darkMode ? 'bg-slate-950 text-white' : 'bg-white text-slate-900'}`}>
 
             <Navbar
@@ -256,6 +259,7 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/auth" element={user ? <Navigate to="/profile" /> : <Auth />} />
                 <Route path="/cart" element={<Cart />} />
+                <Route path="/checkout" element={<Checkout />} />
                 <Route path="/favorites" element={<Favorites />} />
                 <Route path="/profile" element={user ? <Profile /> : <Navigate to="/auth" />} />
                 <Route path="/product/:id" element={<ProductDetail />} />

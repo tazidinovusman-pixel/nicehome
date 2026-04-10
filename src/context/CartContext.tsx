@@ -3,7 +3,7 @@ import React, { createContext, useState, useContext, ReactNode, useEffect } from
 const CartContext = createContext<any>(null);
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
-  // 1. Состояниелерди LocalStorage-ден жүктөө менен баштайбыз
+  // 1. LocalStorage-ден жүктөө
   const [cartItems, setCartItems] = useState<any[]>(() => {
     const savedCart = localStorage.getItem('nicehome_cart');
     return savedCart ? JSON.parse(savedCart) : [];
@@ -14,7 +14,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     return savedFavs ? JSON.parse(savedFavs) : [];
   });
 
-  // 2. Маалымат өзгөргөн сайын LocalStorage-ке автоматтык түрдө сактоо
+  // 2. LocalStorage-ке сактоо
   useEffect(() => {
     localStorage.setItem('nicehome_cart', JSON.stringify(cartItems));
   }, [cartItems]);
@@ -33,7 +33,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  // 3. Добавить в корзину (Санды эсептөө менен)
   const addToCart = (product: any) => {
     setCartItems((prev) => {
       const isExist = prev.find(item => item.id === product.id);
@@ -46,7 +45,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  // 4. Санды көбөйтүү/азайтуу функциясы (+ / -)
   const updateQuantity = (id: number, delta: number) => {
     setCartItems((prev) =>
       prev.map((item) => {
@@ -59,17 +57,20 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     );
   };
 
-  // 5. Өчүрүүнү ID боюнча кылабыз (индекс эмес, коопсуз болуш үчүн)
   const removeFromCart = (id: number) => {
     setCartItems((prev) => prev.filter((item) => item.id !== id));
   };
 
   const clearCart = () => setCartItems([]);
 
+  // Жалпы сумманы эсептөө
+  const totalPrice = cartItems.reduce((acc, item) => acc + (item.price * (item.quantity || 1)), 0);
+
   return (
     <CartContext.Provider value={{ 
       cartItems, addToCart, removeFromCart, updateQuantity, clearCart,
-      favorites, toggleFavorite 
+      favorites, toggleFavorite, 
+      totalPrice 
     }}>
       {children}
     </CartContext.Provider>
