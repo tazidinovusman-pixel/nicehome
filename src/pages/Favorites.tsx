@@ -1,10 +1,9 @@
 import React from 'react';
 import { useCart } from '../context/CartContext';
-import { HeartOff,Heart  } from 'lucide-react';
-
+import { HeartOff, Heart, ShoppingBag } from 'lucide-react';
 
 const Favorites = () => {
-  const { favorites, toggleFavorite } = useCart();
+  const { favorites, toggleFavorite, addToCart } = useCart();
 
   if (favorites.length === 0) {
     return (
@@ -22,13 +21,17 @@ const Favorites = () => {
         {favorites.map((item: any) => (
           <div key={item.id} className="group">
             <div className="aspect-[4/5] bg-[#F6F6F6] mb-4 relative flex items-center justify-center p-6">
-              <img src={item.image_url} className="w-full h-full object-contain mix-blend-multiply" />
-              <button 
-                onClick={() => toggleFavorite(item)}
-                className="absolute top-4 right-4 text-red-500"
-              >
-                <Heart className="w-5 h-5 fill-current" />
-              </button>
+              <img src={item.image_url} className="w-full h-full object-contain mix-blend-multiply" alt={item.name} />
+              
+              <div className="absolute top-4 right-4 flex flex-col gap-2">
+                <button onClick={() => toggleFavorite(item)} className="p-2 bg-white rounded-full text-red-500 shadow-sm">
+                  <Heart className="w-4 h-4 fill-current" />
+                </button>
+                {/* СЕБЕТКЕ КОШУУ БАСКЫЧЫ */}
+                <button onClick={() => addToCart(item)} className="p-2 bg-slate-900 rounded-full text-white shadow-sm hover:bg-indigo-600 transition-all">
+                  <ShoppingBag className="w-4 h-4" />
+                </button>
+              </div>
             </div>
             <h2 className="text-sm font-medium text-slate-800">{item.name}</h2>
             <p className="text-sm font-bold text-slate-900">{item.price} сом</p>

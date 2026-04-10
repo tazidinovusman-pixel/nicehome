@@ -15,9 +15,72 @@ const ProductDetail = () => {
     const [product, setProduct] = useState(null);
     const [similarProducts, setSimilarProducts] = useState([]);
 
+    // ПИКИРЛЕР ҮЧҮН STATE
+    const [reviews, setReviews] = useState([]);
+    const [newReview, setNewReview] = useState("");
+
     const t = translations[lang] || translations['KG'];
     const isFavorite = favorites?.some(f => f.id === Number(id));
 
+    // 1. ПИКИРЛЕРДИ БАЗАДАН АЛЫП КЕЛҮҮ ФУНКЦИЯСЫ
+    // 1. ПИКИРЛЕРДИ АЛЫП КЕЛҮҮ (ОҢДОЛДУ)
+    // 1. ПИКИРЛЕРДИ АЛЫП КЕЛҮҮ (ОҢДОЛДУ)
+   // 1. АЛЫП КЕЛҮҮ ФУНКЦИЯСЫ
+    const fetchReviews = async () => {
+        if (!id) return;
+        const { data, error } = await supabase
+            .from('reviews')
+            .select('*')
+            .eq('product_id', id)
+            .order('created_at', { ascending: false });
+
+        if (!error && data) {
+            setReviews(data);
+        }
+    };
+
+    // 2. ЖӨНӨТҮҮ ФУНКЦИЯСЫ
+    const handleReview = async () => {
+        if (!newReview.trim()) return;
+
+        const reviewData = {
+            product_id: id,
+            user_name: user?.email || "Аноним",
+            text: newReview
+        };
+
+        const { data, error } = await supabase
+            .from('reviews')
+            .insert([reviewData])
+            .select();
+
+        if (error) {
+            alert("Ката: " + error.message);
+        } else if (data && data.length > 0) {
+            setReviews((prev) => [data[0], ...prev]);
+            setNewReview("");
+        }
+    }; // <--- handleReview ушул жерден бүттү
+
+    // 3. ӨЧҮРҮҮ ФУНКЦИЯСЫ (handleReview'ден БӨЛӨК ТУРУШУ КЕРЕК)
+    const deleteReview = async (reviewId) => {
+        if (!window.confirm("Бул пикирди өчүрүүнү каалайсызбы?")) return;
+
+        try {
+            const { error } = await supabase
+                .from('reviews')
+                .delete()
+                .eq('id', reviewId);
+
+            if (error) {
+                alert("Өчүрүү мүмкүн болгон жок: " + error.message);
+            } else {
+                setReviews((prevReviews) => prevReviews.filter(rev => rev.id !== reviewId));
+            }
+        } catch (err) {
+            console.error("Күтүлбөгөн ката:", err);
+        }
+    };
     useEffect(() => {
         window.scrollTo(0, 0);
 
@@ -49,7 +112,10 @@ const ProductDetail = () => {
         };
 
         fetchProductAndSimilar();
+        fetchReviews(); // Баракча ачылганда пикирлерди жүктөө
     }, [id]);
+
+    // 2. ПИКИР ЖӨНӨТҮҮ ФУНКЦИЯСЫ (ОҢДОЛГОН ВАРИАНТ)
 
     const formatPrice = (price) => {
         return price?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
@@ -71,114 +137,81 @@ const ProductDetail = () => {
     return (
         <div className={`min-h-screen p-4 md:p-12 transition-colors duration-500 ${darkMode ? 'bg-slate-950 text-white' : 'bg-white text-slate-900'}`}>
             <div className="max-w-6xl mx-auto">
-                {/* HEADER NAVIGATION */}
+                {/* HEADER */}
                 <div className="flex justify-between items-center mb-8 md:mb-12">
-                    <button
-                        onClick={() => navigate(-1)}
-                        className="flex items-center gap-2 font-black uppercase text-[10px] tracking-[0.2em] opacity-50 hover:opacity-100 transition-all"
-                    >
+                    <button onClick={() => navigate(-1)} className="flex items-center gap-2 font-black uppercase text-[10px] tracking-[0.2em] opacity-50 hover:opacity-100 transition-all">
                         <ChevronLeft size={20} /> {t.back}
                     </button>
-
-                    <div className="flex items-center gap-4"> {/* Баскычтарды бир катарга тизүү үчүн div коштук */}
-
-
-                        {/* ЖҮРӨКЧӨ (ИЗБРАННОЕ) */}
-                        <button
-                            onClick={() => !user ? navigate('/auth') : toggleFavorite(product)}
-                            className={`p-4 rounded-full transition-all active:scale-90 shadow-2xl ${isFavorite
-                                ? 'bg-red-500 text-white shadow-red-500/40'
-                                : 'bg-slate-100 dark:bg-slate-900 text-slate-400 hover:text-red-500'
-                                }`}
-                        >
-                            <Heart size={24} fill={isFavorite ? "currentColor" : "none"} />
-                        </button>
-                    </div>
+                    <button onClick={() => !user ? navigate('/auth') : toggleFavorite(product)} className={`p-4 rounded-full transition-all active:scale-90 shadow-2xl ${isFavorite ? 'bg-red-500 text-white' : 'bg-slate-100 dark:bg-slate-900 text-slate-400'}`}>
+                        <Heart size={24} fill={isFavorite ? "currentColor" : "none"} />
+                    </button>
                 </div>
 
+                {/* PRODUCT INFO */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
-                    {/* IMAGE SECTION */}
                     <div className={`rounded-[3rem] md:rounded-[4rem] p-8 md:p-20 flex items-center justify-center relative overflow-hidden group min-h-[400px] ${darkMode ? 'bg-slate-900' : 'bg-slate-50 shadow-2xl shadow-slate-200'}`}>
-                        <img
-                            src={product.image_url}
-                            className="w-full h-auto max-h-[500px] object-contain z-10 transform group-hover:scale-110 transition-transform duration-1000"
-                            alt={product.name}
-                        />
+                        <img src={product.image_url} className="w-full h-auto max-h-[500px] object-contain z-10 transform group-hover:scale-110 transition-transform duration-1000" alt={product.name} />
                     </div>
 
-                    {/* INFO SECTION */}
                     <div className="flex flex-col pt-4">
-                        <div className="flex flex-wrap gap-3 mb-6 md:mb-8">
-                            {product.is_new && (
-                                <span className="bg-emerald-500 text-white px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest animate-pulse">
-                                    {t.new_model}
-                                </span>
-                            )}
-                            <span className="bg-indigo-600/10 text-indigo-600 dark:text-indigo-400 px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-indigo-600/20">
-                                {product.category}
-                            </span>
+                        <div className="flex flex-wrap gap-3 mb-6">
+                            {product.is_new && <span className="bg-emerald-500 text-white px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest animate-pulse">{t.new_model}</span>}
+                            <span className="bg-indigo-600/10 text-indigo-600 px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-indigo-600/20">{product.category}</span>
                         </div>
+                        <h1 className="text-4xl md:text-7xl font-black italic uppercase mb-6 tracking-tighter leading-[0.95]">{product.name}</h1>
+                        <span className="text-5xl md:text-6xl font-black text-indigo-600 mb-8">{formatPrice(product.price)} <span className="text-xl md:text-2xl">{t.price_tag}</span></span>
 
-                        <h1 className="text-4xl md:text-7xl font-black italic uppercase mb-6 tracking-tighter leading-[0.95]">
-                            {product.name}
-                        </h1>
-
-                        <div className="flex flex-col gap-4 mb-6">
-                            <span className="text-5xl md:text-6xl font-black text-indigo-600">
-                                {formatPrice(product.price)} <span className="text-xl md:text-2xl">{t.price_tag}</span>
-                            </span>
-                        </div>
-
-                        {/* DESCRIPTION SECTION (Сүрөттөмө) */}
-                        <div className="mb-8 p-6 rounded-[2rem] bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800">
+                        <div className="mb-8 p-6 rounded-[2rem] bg-slate-50 dark:bg-slate-900/50 border dark:border-slate-800">
                             <div className="flex items-center gap-2 mb-3 text-indigo-500 font-black uppercase text-[10px] tracking-widest">
-                                <AlignLeft size={16} /> {t.description || "Description / Сүрөттөмө"}
+                                <AlignLeft size={16} /> {t.description || "Description"}
                             </div>
-                            <p className="text-slate-500 dark:text-slate-400 leading-relaxed text-sm md:text-base italic">
-                                {product.description || (lang === 'RU' ? "Описание товара временно отсутствует." : "Товар жөнүндө маалымат убактылуу жок.")}
-                            </p>
+                            <p className="text-slate-500 dark:text-slate-400 leading-relaxed text-sm md:text-base italic">{product.description || "Сүрөттөмө жок."}</p>
                         </div>
 
-                        <div className="flex flex-wrap gap-4 md:gap-6 mb-10">
-                            <div className="flex items-center gap-2 text-slate-400 text-[10px] font-black uppercase tracking-widest">
-                                <Calendar size={16} className="text-indigo-500" />
-                                {t.model}: {product.year || 2026}
-                            </div>
-                            <div className="flex items-center gap-2 text-slate-400 text-[10px] font-black uppercase tracking-widest">
-                                <Clock size={16} className="text-emerald-500" />
-                                {t.date}: {formatDate(product.created_at)}
-                            </div>
-                        </div>
-
-                        <button
-                            onClick={() => !user ? navigate('/auth') : addToCart(product)}
-                            className="py-6 md:py-7 bg-slate-900 dark:bg-white dark:text-black text-white rounded-[2rem] md:rounded-[2.5rem] font-black text-lg md:text-xl flex items-center justify-center gap-4 hover:bg-indigo-600 hover:text-white transition-all active:scale-95 shadow-2xl shadow-indigo-500/20"
-                        >
+                        <button onClick={() => !user ? navigate('/auth') : addToCart(product)} className="py-6 bg-slate-900 dark:bg-white dark:text-black text-white rounded-[2rem] font-black text-lg flex items-center justify-center gap-4 hover:bg-indigo-600 hover:text-white transition-all shadow-2xl shadow-indigo-500/20">
                             <ShoppingBag /> {t.add_to_cart}
                         </button>
                     </div>
                 </div>
 
-                {/* SIMILAR PRODUCTS */}
-                {similarProducts.length > 0 && (
-                    <div className="mt-24 border-t dark:border-slate-800 pt-16">
-                        <h2 className="text-3xl font-black italic uppercase mb-10 tracking-tighter">
-                            {t.similar_products}
-                        </h2>
+                <div className="space-y-6">
+                    {reviews.length > 0 ? (
+                        reviews.map((rev, index) => (
+                            <div key={index} className="p-6 rounded-[2rem] bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 animate-in fade-in slide-in-from-bottom-2">
 
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                            {similarProducts.map((item) => (
-                                <div key={item.id} onClick={() => navigate(`/product/${item.id}`)} className="group cursor-pointer">
-                                    <div className={`aspect-square rounded-[2rem] p-6 mb-4 flex items-center justify-center transition-all group-hover:scale-95 ${darkMode ? 'bg-slate-900' : 'bg-slate-50'}`}>
-                                        <img src={item.image_url} alt={item.name} className="w-full h-full object-contain transform group-hover:rotate-6 transition-transform" />
+                                {/* БУЛ ЖЕРГЕ flex КОШТУК: Текст солдо, Баскыч оңдо болушу үчүн */}
+                                <div className="flex justify-between items-start gap-4">
+                                    <div className="flex flex-col flex-1">
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <div className="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-[10px]">
+                                                {rev.user_name?.charAt(0).toUpperCase()}
+                                            </div>
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                                {rev.user_name?.split('@')[0]}
+                                            </span>
+                                        </div>
+                                        <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed">
+                                            {rev.text}
+                                        </p>
                                     </div>
-                                    <h3 className="font-bold text-sm mb-1 truncate uppercase">{item.name}</h3>
-                                    <p className="text-indigo-600 font-black text-lg">{formatPrice(item.price)} {t.price_tag}</p>
+
+                                    {/* ӨЧҮРҮҮ БАСКЫЧЫ: Төмөндөгү шарт аткарылса гана көрүнөт */}
+                                    {(user?.email === rev.user_name || user?.email === 'admin@gmail.com') && (
+                                        <button
+                                            onClick={() => deleteReview(rev.id)}
+                                            className="text-[10px] font-black uppercase text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 p-2 rounded-xl transition-all flex-shrink-0"
+                                        >
+                                            Өчүрүү
+                                        </button>
+                                    )}
                                 </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
+
+                            </div>
+                        ))
+                    ) : (
+                        <p className="text-slate-400 italic text-sm">Азырынча пикирлер жок.</p>
+                    )}
+                </div>
             </div>
         </div>
     );
