@@ -235,8 +235,42 @@ const ProductDetail = () => {
                             <p className="text-slate-400 italic text-sm">Азырынча пикирлер жок.</p>
                         )}
                     </div>
+
                 </div>
+
+                {/* OKSHOSH TOVARLAR SECTION */}
+                {similarProducts.length > 0 && (
+                    <div className="mt-20 border-t dark:border-slate-800 pt-16">
+                        <h2 className="text-3xl font-black italic uppercase mb-10 tracking-tighter">
+                            {t.similar_products || "Окшош товарлар"}
+                        </h2>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                            {similarProducts.map((item) => (
+                                <div
+                                    key={item.id}
+                                    onClick={() => navigate(`/product/${item.id}`)}
+                                    className="group cursor-pointer flex flex-col gap-4"
+                                >
+                                    <div className={`aspect-square rounded-[2rem] p-6 flex items-center justify-center transition-all duration-500 ${darkMode ? 'bg-slate-900 group-hover:bg-slate-800' : 'bg-slate-50 group-hover:bg-slate-100 shadow-xl shadow-slate-100'}`}>
+                                        <img
+                                            src={item.image_url}
+                                            alt={item.name}
+                                            className="w-full h-full object-contain transform group-hover:scale-110 transition-transform duration-500"
+                                        />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-black uppercase text-xs tracking-tighter mb-1 truncate">{item.name}</h3>
+                                        <p className="text-indigo-600 font-black text-sm">{formatPrice(item.price)} {t.price_tag}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
             </div>
+
+
         </div>
     );
 };

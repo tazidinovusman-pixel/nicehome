@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { supabase } from "../../api/supabaseClient";
 import { LanguageContext } from '../../context/LanguageContext';
-import { 
-  Trash2, PackagePlus, Tag, Banknote, Image as ImageIcon, 
+import {
+  Trash2, PackagePlus, Tag, Banknote, Image as ImageIcon,
   PlusCircle, Users, LayoutDashboard, Menu, X, Package, LogOut,
   FileText, Calendar, Sparkles, Mail, UserCircle
 } from 'lucide-react';
@@ -52,24 +52,24 @@ const Admin = () => {
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-  //   if (window.confirm("Бул колдонуучуну өчүрүүнү каалайсызбы?")) {
-  //   const { error } = await supabase
-  //     .from('profiles') // Таблицаңыздын аты 'profiles' экенин текшериңиз
-  //     .delete()
-  //     .eq('id', userId);
+    //   if (window.confirm("Бул колдонуучуну өчүрүүнү каалайсызбы?")) {
+    //   const { error } = await supabase
+    //     .from('profiles') // Таблицаңыздын аты 'profiles' экенин текшериңиз
+    //     .delete()
+    //     .eq('id', userId);
 
-  //   if (error) {
-  //     alert("Ката: " + error.message);
-  //   } else {
-  //     // Экрандан дароо өчүрүү
-  //     setUsers(prev => prev.filter(u => u.id !== userId));
-  //     alert("Колдонуучу ийгиликтүү өчүрүлдү!");
-  //   }
-  // }
-    const { error } = await supabase.from('items').insert([{ 
-      name, 
-      price: Number(price), 
-      category, 
+    //   if (error) {
+    //     alert("Ката: " + error.message);
+    //   } else {
+    //     // Экрандан дароо өчүрүү
+    //     setUsers(prev => prev.filter(u => u.id !== userId));
+    //     alert("Колдонуучу ийгиликтүү өчүрүлдү!");
+    //   }
+    // }
+    const { error } = await supabase.from('items').insert([{
+      name,
+      price: Number(price),
+      category,
       image_url: imageUrl,
       description,
       year: Number(year),
@@ -81,7 +81,7 @@ const Admin = () => {
       alert('Ката: ' + error.message);
     } else {
       alert("Товар ийгиликтүү кошулду!");
-      setName(''); setPrice(''); setImageUrl(''); 
+      setName(''); setPrice(''); setImageUrl('');
       setDescription(''); setYear('2026'); setIsNew(false);
       fetchData();
     }
@@ -180,8 +180,19 @@ const Admin = () => {
                 </div>
                 <div className="relative">
                   <ImageIcon className="absolute left-4 top-4 text-slate-400" size={18} />
-                  <input className="w-full pl-12 pr-4 py-4 bg-slate-50 rounded-2xl outline-none ring-1 ring-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all" placeholder="Сүрөт URL (https://...)" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} required />
+                  <input
+                    className="w-full pl-12 pr-4 py-4 bg-slate-50 rounded-2xl outline-none ring-1 ring-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all"
+                    placeholder="Сүрөт URL (https://...)"
+                    value={imageUrl}
+                    onChange={(e) => setImageUrl(e.target.value)}
+                    required
+                  />
                 </div>
+                {imageUrl && (
+                  <div className="mt-4 flex flex-col items-center gap-2 ...">
+                    {/* ... сүрөт блогу ... */}
+                  </div>
+                )}
                 <button disabled={isSubmitting} className="w-full py-5 bg-slate-900 text-white rounded-[2rem] font-black uppercase tracking-widest hover:bg-indigo-600 transition-all shadow-xl active:scale-95 disabled:opacity-50">
                   {isSubmitting ? 'Жүктөлүүдө...' : 'Товарды кошуу'}
                 </button>
@@ -205,8 +216,8 @@ const Admin = () => {
                         <p className="text-indigo-600 font-black text-xs">{item.price} сом</p>
                       </div>
                     </div>
-                    <button 
-                      onClick={() => handleDeleteProduct(item.id)} 
+                    <button
+                      onClick={() => handleDeleteProduct(item.id)}
                       className="p-4 text-slate-300 hover:text-red-500 transition-all"
                     >
                       <Trash2 size={22} />
@@ -240,12 +251,12 @@ const Admin = () => {
                         <p className="text-[10px] text-indigo-500 font-black uppercase tracking-widest mt-1">Ролу: {u.role || 'user'}</p>
                       </div>
                     </div>
-                    <button 
-            onClick={() => handleDeleteUser(u.id)} // u.id колдонулат
-            className="p-4 text-slate-300 hover:text-red-500 transition-all active:scale-90"
-          >
-            <Trash2 size={22} />
-          </button>
+                    <button
+                      onClick={() => handleDeleteUser(u.id)} // u.id колдонулат
+                      className="p-4 text-slate-300 hover:text-red-500 transition-all active:scale-90"
+                    >
+                      <Trash2 size={22} />
+                    </button>
                   </div>
                 ))}
               </div>

@@ -59,7 +59,8 @@ const menuCategories = [
   { key: 'garden', icon: <TreePine size={20} /> },
 ];
 
-const Navbar = ({ t, darkMode, setDarkMode, setIsMenuOpen, user, ADMIN_EMAIL }) => {
+// Аргументтерге "userRole" кошулду
+const Navbar = ({ t, darkMode, setDarkMode, setIsMenuOpen, user, ADMIN_EMAIL, userRole }) => { 
   const { cart } = useCart();
   const navigate = useNavigate();
 
@@ -84,11 +85,13 @@ const Navbar = ({ t, darkMode, setDarkMode, setIsMenuOpen, user, ADMIN_EMAIL }) 
           </div>
 
           <div className="flex items-center gap-0.5 md:gap-2">
-            {user?.email === ADMIN_EMAIL && (
+            {/* Эми бул жер ката бербейт, анткени userRole жогоруда кабыл алынды */}
+            {(userRole === 'admin' || userRole === 'seller') && (
               <Link to="/admin" className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-colors">
                 <ShieldCheck size={18} className="animate-pulse" />
               </Link>
             )}
+            
             <button onClick={() => setDarkMode(!darkMode)} className="p-1.5 text-slate-400 hover:text-yellow-400 transition-colors">
               {darkMode ? <Sun size={18} /> : <Moon size={18} />}
             </button>
@@ -192,7 +195,7 @@ function App() {
       <CartProvider>
         <Router>
           <ScrollToTop />
-       
+
           <div className={`min-h-screen flex flex-col transition-colors duration-300 ${darkMode ? 'bg-slate-950 text-white' : 'bg-white text-slate-900'}`}>
 
             <Navbar
@@ -201,14 +204,16 @@ function App() {
               setDarkMode={setDarkMode}
               setIsMenuOpen={setIsMenuOpen}
               user={user}
-              userRole={userRole} // Жаңы параметр
+              userRole={userRole}
             />
-            
-            {(userRole === 'admin' || userRole === 'seller') && (
-              <Link to="/admin" className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-colors">
-                <ShieldCheck size={18} className="animate-pulse" />
-              </Link>
-            )}
+
+            {/* {(userRole === 'admin' || userRole === 'seller')
+            //  && (
+            //   <Link to="/admin" className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-colors">
+            //     <ShieldCheck size={18} className="animate-pulse" />
+            //   </Link>
+            // )
+            } */}
 
             {/* --- БУРГЕР МЕНЮ --- */}
             {isMenuOpen && (
