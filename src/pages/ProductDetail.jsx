@@ -3,14 +3,18 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../api/supabaseClient';
 import { LanguageContext } from '../App';
 import { useCart } from '../context/CartContext';
-import { ChevronLeft, ShoppingBag, Calendar, Heart, Clock, AlignLeft } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ShoppingBag, Calendar, Heart, Clock, AlignLeft } from 'lucide-react';
+// Импорттордун арасына буларды кошуп кой:
+// import {    ChevronLeft,  ChevronRight,  Heart,  ShoppingBag,  AlignLeft,   } from 'lucide-react';
 
 const ProductDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const [activeImage, setActiveImage] = useState(0);
 
     const { darkMode, user, lang, translations } = useContext(LanguageContext);
     const { addToCart, toggleFavorite, favorites } = useCart();
+
 
     const [product, setProduct] = useState(null);
     const [similarProducts, setSimilarProducts] = useState([]);
@@ -149,33 +153,144 @@ const ProductDetail = () => {
                 </div>
 
                 {/* PRODUCT INFO */}
+                {/* PRODUCT IMAGE & GALLERY SECTION */}
+                {/* PRODUCT INFO - СҮРӨТ ЖАНА МААЛЫМАТТАР */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
-                    <div className={`rounded-[3rem] md:rounded-[4rem] p-8 md:p-20 flex items-center justify-center relative overflow-hidden group min-h-[400px] ${darkMode ? 'bg-slate-900' : 'bg-slate-50 shadow-2xl shadow-slate-200'}`}>
-                        <img src={product.image_url} className="w-full h-auto max-h-[500px] object-contain z-10 transform group-hover:scale-110 transition-transform duration-1000" alt={product.name} />
+
+                    {/* СОЛ ЖАК: СҮРӨТ ГАЛЕРЕЯСЫ */}
+                    <div className="flex flex-col gap-6">
+                        {/* НЕГИЗГИ ЧОҢ СҮРӨТ */}
+                        <div className={`rounded-[3rem] md:rounded-[4rem] p-8 md:p-20 flex items-center justify-center relative overflow-hidden group min-h-[400px] ${darkMode ? 'bg-slate-900' : 'bg-slate-50 shadow-2xl shadow-slate-200'}`}>
+                            <img
+                                src={product.image_urls && product.image_urls[activeImage] ? product.image_urls[activeImage] : product.image_url}
+                                className="w-full h-auto max-h-[500px] object-contain z-10 transform group-hover:scale-105 transition-all duration-700"
+                                alt={product.name}
+                            />
+
+                            {/* СТРЕЛКАЛАР */}
+                            {product.image_urls?.length > 1 && (
+                                <>
+                                    <button
+                                        onClick={() => setActiveImage(prev => prev === 0 ? product.image_urls.length - 1 : prev - 1)}
+                                        className="absolute left-6 z-20 p-4 rounded-full bg-white/10 backdrop-blur-md text-white opacity-0 group-hover:opacity-100 transition-all hover:bg-white/20"
+                                    >
+                                        <ChevronLeft size={24} />
+                                    </button>
+                                    <button
+                                        onClick={() => setActiveImage(prev => prev === product.image_urls.length - 1 ? 0 : prev + 1)}
+                                        className="absolute right-6 z-20 p-4 rounded-full bg-white/10 backdrop-blur-md text-white opacity-0 group-hover:opacity-100 transition-all hover:bg-white/20"
+                                    >
+                                        <ChevronRight size={24} />
+                                    </button>
+                                </>
+                            )}
+                        </div>
+
+                        {/* КИЧИНЕКЕЙ СҮРӨТТӨР (THUMBNAILS) */}
+                        {product.image_urls?.length > 1 && (
+                            <div className="flex justify-center gap-4 px-4">
+                                {product.image_urls.map((img, index) => (
+                                    <button
+                                        key={index}
+                                        onClick={() => setActiveImage(index)}
+                                        className={`relative w-20 h-20 md:w-24 md:h-24 rounded-[1.5rem] overflow-hidden transition-all duration-300 border-2 ${activeImage === index
+                                            ? 'border-indigo-600 scale-110 shadow-lg shadow-indigo-500/20'
+                                            : 'border-transparent opacity-50 hover:opacity-100'
+                                            } ${darkMode ? 'bg-slate-900' : 'bg-slate-50'}`}
+                                    >
+                                        <img src={img} className="w-full h-full object-contain p-2" alt={`${product.name} ${index}`} />
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
+                    {/* ОҢ ЖАК: МААЛЫМАТТАР, БААСЫ ЖАНА КОРЗИНА */}
                     <div className="flex flex-col pt-4">
                         <div className="flex flex-wrap gap-3 mb-6">
                             {product.is_new && <span className="bg-emerald-500 text-white px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest animate-pulse">{t.new_model}</span>}
                             <span className="bg-indigo-600/10 text-indigo-600 px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-indigo-600/20">{product.category}</span>
                         </div>
-                        <h1 className="text-4xl md:text-7xl font-black italic uppercase mb-6 tracking-tighter leading-[0.95]">{product.name}</h1>
-                        <span className="text-5xl md:text-6xl font-black text-indigo-600 mb-8">{formatPrice(product.price)} <span className="text-xl md:text-2xl">{t.price_tag}</span></span>
 
+                        <h1 className="text-4xl md:text-7xl font-black italic uppercase mb-6 tracking-tighter leading-[0.95]">{product.name}</h1>
+
+                        <span className="text-5xl md:text-6xl font-black text-indigo-600 mb-8">
+                            {formatPrice(product.price)} <span className="text-xl md:text-2xl">{t.price_tag}</span>
+                        </span>
+
+                        {/* DESCRIPTION БӨЛҮГҮ */}
                         <div className="mb-8 p-6 rounded-[2rem] bg-slate-50 dark:bg-slate-900/50 border dark:border-slate-800">
                             <div className="flex items-center gap-2 mb-3 text-indigo-500 font-black uppercase text-[10px] tracking-widest">
                                 <AlignLeft size={16} /> {t.description || "Description"}
                             </div>
-                            <p className="text-slate-500 dark:text-slate-400 leading-relaxed text-sm md:text-base italic">{product.description || "Сүрөттөмө жок."}</p>
+                            <p className="text-slate-500 dark:text-slate-400 leading-relaxed text-sm md:text-base italic">
+                                {product.description || "Сүрөттөмө жок."}
+                            </p>
                         </div>
 
-                        <button onClick={() => !user ? navigate('/auth') : addToCart(product)} className="py-6 bg-slate-900 dark:bg-white dark:text-black text-white rounded-[2rem] font-black text-lg flex items-center justify-center gap-4 hover:bg-indigo-600 hover:text-white transition-all shadow-2xl shadow-indigo-500/20">
+                        {/* КОРЗИНАГА КОШУУ БАСКЫЧЫ */}
+                        <button
+                            onClick={() => !user ? navigate('/auth') : addToCart(product)}
+                            className="py-6 bg-slate-900 dark:bg-white dark:text-black text-white rounded-[2rem] font-black text-lg flex items-center justify-center gap-4 hover:bg-indigo-600 hover:text-white transition-all shadow-2xl shadow-indigo-500/20"
+                        >
                             <ShoppingBag /> {t.add_to_cart}
                         </button>
                     </div>
                 </div>
 
-                {/* ПИКИРЛЕР (REVIEWS) SECTION */}
+               
+
+                {/* OKSHOSH TOVARLAR SECTION */}
+                {similarProducts.length > 0 && (
+                    <div className="mt-20 border-t dark:border-slate-800 pt-16">
+                        <h2 className="text-3xl font-black italic uppercase mb-10 tracking-tighter">
+                            {t.similar_products || "Окшош товарлар"}
+                        </h2>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                            {similarProducts.map((item) => (
+                                <div
+                                    key={item.id}
+                                    onClick={() => navigate(`/product/${item.id}`)}
+                                    className="group cursor-pointer flex flex-col gap-4"
+                                >
+                                    {/* СҮРӨТ КОНТЕЙНЕРИ */}
+                                    <div className={`aspect-square rounded-[2rem] p-6 flex items-center justify-center relative transition-all duration-500 overflow-hidden ${darkMode ? 'bg-slate-900 group-hover:bg-slate-800' : 'bg-slate-50 group-hover:bg-slate-100 shadow-xl shadow-slate-100'}`}>
+
+                                        {/* ЖҮРӨКЧӨ (FAVORITES) БАСКЫЧЫ */}
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation(); // Бул маанилүү! Басканда продуктка кирип кетпейт
+                                                toggleFavorite(item);
+                                            }}
+                                            className="absolute top-4 right-4 z-20 p-3 rounded-2xl bg-white/10 backdrop-blur-md text-white md:opacity-0 md:group-hover:opacity-100 transition-all hover:bg-white/20 active:scale-90"
+                                        >
+                                            <Heart
+                                                size={18}
+                                                fill={favorites.some(fav => fav.id === item.id) ? "currentColor" : "none"}
+                                                className={favorites.some(fav => fav.id === item.id) ? "text-red-500" : "text-white"}
+                                            />
+                                        </button>
+
+                                        <img
+                                            src={item.image_url}
+                                            alt={item.name}
+                                            className="w-full h-full object-contain transform group-hover:scale-110 transition-transform duration-500"
+                                        />
+                                    </div>
+
+                                    {/* ТЕКСТ БӨЛҮГҮ */}
+                                    <div>
+                                        <h3 className="font-black uppercase text-xs tracking-tighter mb-1 truncate">{item.name}</h3>
+                                        <p className="text-indigo-600 font-black text-sm">{formatPrice(item.price)} {t.price_tag}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+            </div>
+ {/* ПИКИРЛЕР (REVIEWS) SECTION */}
                 <div className="mt-20 border-t dark:border-slate-800 pt-16">
                     <h2 className="text-3xl font-black italic uppercase mb-10 tracking-tighter">
                         Пикирлер ({reviews.length})
@@ -237,39 +352,6 @@ const ProductDetail = () => {
                     </div>
 
                 </div>
-
-                {/* OKSHOSH TOVARLAR SECTION */}
-                {similarProducts.length > 0 && (
-                    <div className="mt-20 border-t dark:border-slate-800 pt-16">
-                        <h2 className="text-3xl font-black italic uppercase mb-10 tracking-tighter">
-                            {t.similar_products || "Окшош товарлар"}
-                        </h2>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                            {similarProducts.map((item) => (
-                                <div
-                                    key={item.id}
-                                    onClick={() => navigate(`/product/${item.id}`)}
-                                    className="group cursor-pointer flex flex-col gap-4"
-                                >
-                                    <div className={`aspect-square rounded-[2rem] p-6 flex items-center justify-center transition-all duration-500 ${darkMode ? 'bg-slate-900 group-hover:bg-slate-800' : 'bg-slate-50 group-hover:bg-slate-100 shadow-xl shadow-slate-100'}`}>
-                                        <img
-                                            src={item.image_url}
-                                            alt={item.name}
-                                            className="w-full h-full object-contain transform group-hover:scale-110 transition-transform duration-500"
-                                        />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-black uppercase text-xs tracking-tighter mb-1 truncate">{item.name}</h3>
-                                        <p className="text-indigo-600 font-black text-sm">{formatPrice(item.price)} {t.price_tag}</p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-            </div>
-
 
         </div>
     );

@@ -23,7 +23,8 @@ const Admin = () => {
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
   const [category, setCategory] = useState('Living Room');
-  const [imageUrl, setImageUrl] = useState('');
+// Бир эле string эмес, массив катары сактайбыз
+const [imagesList, setImagesList] = useState(["", "", "", ""]);
   const [description, setDescription] = useState('');
   const [year, setYear] = useState('2026');
   const [isNew, setIsNew] = useState(false);
@@ -49,44 +50,31 @@ const Admin = () => {
   }, [userRole, user?.id]);
 
   // ТОВАР КОШУУ (author_id кошулду)
-  const handleAddProduct = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    //   if (window.confirm("Бул колдонуучуну өчүрүүнү каалайсызбы?")) {
-    //   const { error } = await supabase
-    //     .from('profiles') // Таблицаңыздын аты 'profiles' экенин текшериңиз
-    //     .delete()
-    //     .eq('id', userId);
+ const handleAddProduct = async (e) => {
+  e.preventDefault();
+  setIsSubmitting(true);
 
-    //   if (error) {
-    //     alert("Ката: " + error.message);
-    //   } else {
-    //     // Экрандан дароо өчүрүү
-    //     setUsers(prev => prev.filter(u => u.id !== userId));
-    //     alert("Колдонуучу ийгиликтүү өчүрүлдү!");
-    //   }
-    // }
-    const { error } = await supabase.from('items').insert([{
+  // Бош эмес шилтемелерди гана массивге чогултабыз
+  const finalImages = imagesList.filter(url => url.trim() !== "");
+
+  const { data, error } = await supabase
+    .from('items')
+    .insert([{
       name,
-      price: Number(price),
+      price,
       category,
-      image_url: imageUrl,
+      year,
       description,
-      year: Number(year),
-      is_new: isNew,
-      author_id: user?.id // Бул жер маанилүү!
+      image_urls: finalImages, // Жаңы ачылган массив колонкасы
+      image_url: finalImages[0] // Эски коддор бузулбашы үчүн биринчи сүрөттү бул жерге да сактап кой
     }]);
 
-    if (error) {
-      alert('Ката: ' + error.message);
-    } else {
-      alert("Товар ийгиликтүү кошулду!");
-      setName(''); setPrice(''); setImageUrl('');
-      setDescription(''); setYear('2026'); setIsNew(false);
-      fetchData();
-    }
-    setIsSubmitting(false);
-  };
+  if (!error) {
+    setImagesList(["", "", "", ""]); // Форманы тазалоо
+    // башка тазалоо коддору...
+  }
+  setIsSubmitting(false);
+};
 
   // ТОВАР ӨЧҮРҮҮ (Экранды дароо тазалоо кошулду)
   const handleDeleteProduct = async (id: number) => {
@@ -105,6 +93,7 @@ const Admin = () => {
       }
     }
   };
+  
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col lg:flex-row">
@@ -178,21 +167,42 @@ const Admin = () => {
                   <FileText className="absolute left-4 top-4 text-slate-400" size={18} />
                   <textarea className="w-full pl-12 pr-4 py-4 bg-slate-50 rounded-2xl outline-none ring-1 ring-slate-200 focus:ring-2 focus:ring-indigo-500" placeholder="Толук сүрөттөмө..." value={description} onChange={(e) => setDescription(e.target.value)} rows={3} />
                 </div>
-                <div className="relative">
-                  <ImageIcon className="absolute left-4 top-4 text-slate-400" size={18} />
-                  <input
-                    className="w-full pl-12 pr-4 py-4 bg-slate-50 rounded-2xl outline-none ring-1 ring-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all"
-                    placeholder="Сүрөт URL (https://...)"
-                    value={imageUrl}
-                    onChange={(e) => setImageUrl(e.target.value)}
-                    required
-                  />
-                </div>
-                {imageUrl && (
-                  <div className="mt-4 flex flex-col items-center gap-2 ...">
-                    {/* ... сүрөт блогу ... */}
-                  </div>
-                )}
+               {/* БИР НЕЧЕ СҮРӨТ URL КИРГИЗҮҮ */}
+<div className="space-y-4">
+  <div className="flex items-center gap-2 mb-2">
+    <ImageIcon size={18} className="text-indigo-600" />
+    <span className="text-[10px] font-black uppercase tracking-widest opacity-50">Сүрөттөр (максимум 4 даана)</span>
+  </div>
+  
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    {imagesList.map((url, index) => (
+      <div key={index} className="relative">
+        <div className="absolute left-4 top-4 text-slate-400 text-[10px] font-black">{index + 1}</div>
+        <input 
+          className="w-full pl-12 pr-4 py-4 bg-slate-50 rounded-2xl outline-none ring-1 ring-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all text-sm" 
+          placeholder={`Сүрөт URL ${index + 1}`} 
+          value={url} 
+          onChange={(e) => {
+            const newImages = [...imagesList];
+            newImages[index] = e.target.value;
+            setImagesList(newImages);
+          }} 
+          required={index === 0} // Биринчи сүрөт сөзсүз болушу керек
+        />
+      </div>
+    ))}
+  </div>
+
+  {/* PREVIEW - БАРДЫК СҮРӨТТӨРДҮ КӨРҮҮ */}
+  <div className="flex gap-3 overflow-x-auto py-2">
+    {imagesList.map((url, index) => url && (
+      <div key={index} className="flex-shrink-0 w-20 h-20 rounded-xl border-2 border-slate-100 overflow-hidden bg-slate-50 shadow-sm relative group">
+        <img src={url} className="w-full h-full object-contain" alt="preview" onError={(e) => e.target.src = "https://placehold.co/100x100?text=Error"} />
+        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-[8px] font-bold">Preview</div>
+      </div>
+    ))}
+  </div>
+</div>
                 <button disabled={isSubmitting} className="w-full py-5 bg-slate-900 text-white rounded-[2rem] font-black uppercase tracking-widest hover:bg-indigo-600 transition-all shadow-xl active:scale-95 disabled:opacity-50">
                   {isSubmitting ? 'Жүктөлүүдө...' : 'Товарды кошуу'}
                 </button>
