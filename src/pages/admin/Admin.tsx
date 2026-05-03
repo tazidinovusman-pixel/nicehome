@@ -4,10 +4,10 @@ import { LanguageContext } from '../../context/LanguageContext';
 import {
   Trash2, PackagePlus, Tag, Banknote, Image as ImageIcon,
   PlusCircle, Users, LayoutDashboard, Menu, X, Package, LogOut,
-  FileText, Calendar, Sparkles, Mail, UserCircle
+  FileText, Calendar, Sparkles, Mail, UserCircle,
+  Pencil
 } from 'lucide-react';
 
-// ... (башка импорттор ошол бойдон калат)
 
 const Admin = () => {
   const { lang, translations, userRole, user } = useContext(LanguageContext);
@@ -23,8 +23,8 @@ const Admin = () => {
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
   const [category, setCategory] = useState('Living Room');
-// Бир эле string эмес, массив катары сактайбыз
-const [imagesList, setImagesList] = useState(["", "", "", ""]);
+  // Бир эле string эмес, массив катары сактайбыз
+  const [imagesList, setImagesList] = useState(["", "", "", ""]);
   const [description, setDescription] = useState('');
   const [year, setYear] = useState('2026');
   const [isNew, setIsNew] = useState(false);
@@ -44,38 +44,123 @@ const [imagesList, setImagesList] = useState(["", "", "", ""]);
       console.error("Fetch error:", err);
     }
   };
-
+  // 1. Форманы тазалоо
+  const clearForm = () => {
+    setEditingProductId(null);
+    setName('');
+    setPrice('');
+    setCategory('Living Room');
+    setImagesList(["", "", "", ""]);
+    setDescription('');
+    setYear('2026');
+    setIsNew(false);
+  };
   useEffect(() => {
     fetchData();
   }, [userRole, user?.id]);
 
   // ТОВАР КОШУУ (author_id кошулду)
- const handleAddProduct = async (e) => {
-  e.preventDefault();
-  setIsSubmitting(true);
+  const handleAddProduct = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
 
-  // Бош эмес шилтемелерди гана массивге чогултабыз
-  const finalImages = imagesList.filter(url => url.trim() !== "");
+    // Бош эмес шилтемелерди гана массивге чогултабыз
+    const finalImages = imagesList.filter(url => url.trim() !== "");
 
-  const { data, error } = await supabase
-    .from('items')
-    .insert([{
+    const { data, error } = await supabase
+      .from('items')
+      .insert([{
+        name,
+        price,
+        category,
+        year,
+        description,
+        image_urls: finalImages, // Жаңы ачылган массив колонкасы
+        image_url: finalImages[0] // Эски коддор бузулбашы үчүн биринчи сүрөттү бул жерге да сактап кой
+      }]);
+
+    if (!error) {
+      setImagesList(["", "", "", ""]); // Форманы тазалоо
+      // башка тазалоо коддору...
+    }
+    setIsSubmitting(false);
+  };
+  // 2. Оңдоо режимин иштетүү (Add өтмөгүнө жөнөтөт)
+  const handleEditMode = (product) => {
+    setEditingProductId(product.id); // ID сөзсүз сакталышы керек
+  setActiveTab('add');
+    setActiveTab('add');
+    
+    setName(product.name);
+    setPrice(product.price);
+    setCategory(product.category);
+    setDescription(product.description);
+    setYear(product.year || '2026');
+    setIsNew(product.is_new || false);
+
+    const productImages = product.image_urls || [];
+    const filledImages = ["", "", "", ""].map((url, index) => productImages[index] || "");
+    setImagesList(filledImages);
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    console.log(editingProductId);
+
+    const finalImages = imagesList.filter(url => url.trim() !== "");
+    const productData = {
       name,
-      price,
+      price: parseFloat(price),
       category,
       year,
       description,
-      image_urls: finalImages, // Жаңы ачылган массив колонкасы
-      image_url: finalImages[0] // Эски коддор бузулбашы үчүн биринчи сүрөттү бул жерге да сактап кой
-    }]);
+      image_urls: finalImages,
+      image_url: finalImages[0] || "",
+      author_id: user?.id,
+      is_new: isNew
+    };
 
-  if (!error) {
-    setImagesList(["", "", "", ""]); // Форманы тазалоо
-    // башка тазалоо коддору...
-  }
-  setIsSubmitting(false);
-};
+    try {
+      if (editingProductId) {
+        // UPDATE (ОҢДОО)
+        const { error } = await supabase
+          .from('items')
+          .update(productData)
+          .eq('id', editingProductId);
+        if (error) throw error;
+        alert("Ийгиликтүү жаңыртылды!");
+      } else {
+        // INSERT (КОШУУ)
+        const { error } = await supabase
+          .from('items')
+          .insert([productData]);
+        if (error) throw error;
+        alert("Ийгиликтүү кошулду!");
+      }
 
+      clearForm();
+      fetchData(); // Тизмени жаңылоо
+      setActiveTab('manage'); // Тизмеге кайтуу
+    } catch (err: any) {
+      alert("Ката кетти: " + err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm("Бул товарды өчүрүүнү каалайсызбы?")) {
+      try {
+        const { error } = await supabase.from('items').delete().eq('id', id);
+        if (error) throw error;
+        setProducts(prev => prev.filter(p => p.id !== id)); // Экрандан өчүрүү
+        alert("Товар өчүрүлдү!");
+      } catch (err: any) {
+        alert("Ката: " + err.message);
+      }
+    }
+  };
+  const [editingProductId, setEditingProductId] = useState(null);
   // ТОВАР ӨЧҮРҮҮ (Экранды дароо тазалоо кошулду)
   const handleDeleteProduct = async (id: number) => {
     if (window.confirm("Бул товарды өчүрүүнү каалайсызбы?")) {
@@ -93,7 +178,7 @@ const [imagesList, setImagesList] = useState(["", "", "", ""]);
       }
     }
   };
-  
+
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col lg:flex-row">
@@ -130,9 +215,13 @@ const [imagesList, setImagesList] = useState(["", "", "", ""]);
             <div className="bg-white p-8 md:p-12 rounded-[3rem] shadow-xl border border-slate-100">
               <div className="flex items-center gap-4 mb-10">
                 <div className="bg-indigo-600 p-3 rounded-2xl text-white shadow-lg"><PackagePlus /></div>
-                <h3 className="text-2xl font-black italic">Жаңы товар кошуу</h3>
+                {/* <h3 className="text-2xl font-black italic">Жаңы товар кошуу</h3> */}
+               <h3 className="text-2xl font-black italic uppercase">
+  {/* Бул жерде editingProductId деп жазылганбы же ката (мисалы editId) кеткенби? */}
+  {editingProductId ? "Товарды оңдоо" : "Жаңы товар кошуу"}
+</h3>
               </div>
-              <form onSubmit={handleAddProduct} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="relative">
                     <Tag className="absolute left-4 top-4 text-slate-400" size={18} />
@@ -167,50 +256,52 @@ const [imagesList, setImagesList] = useState(["", "", "", ""]);
                   <FileText className="absolute left-4 top-4 text-slate-400" size={18} />
                   <textarea className="w-full pl-12 pr-4 py-4 bg-slate-50 rounded-2xl outline-none ring-1 ring-slate-200 focus:ring-2 focus:ring-indigo-500" placeholder="Толук сүрөттөмө..." value={description} onChange={(e) => setDescription(e.target.value)} rows={3} />
                 </div>
-               {/* БИР НЕЧЕ СҮРӨТ URL КИРГИЗҮҮ */}
-<div className="space-y-4">
-  <div className="flex items-center gap-2 mb-2">
-    <ImageIcon size={18} className="text-indigo-600" />
-    <span className="text-[10px] font-black uppercase tracking-widest opacity-50">Сүрөттөр (максимум 4 даана)</span>
-  </div>
-  
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-    {imagesList.map((url, index) => (
-      <div key={index} className="relative">
-        <div className="absolute left-4 top-4 text-slate-400 text-[10px] font-black">{index + 1}</div>
-        <input 
-          className="w-full pl-12 pr-4 py-4 bg-slate-50 rounded-2xl outline-none ring-1 ring-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all text-sm" 
-          placeholder={`Сүрөт URL ${index + 1}`} 
-          value={url} 
-          onChange={(e) => {
-            const newImages = [...imagesList];
-            newImages[index] = e.target.value;
-            setImagesList(newImages);
-          }} 
-          required={index === 0} // Биринчи сүрөт сөзсүз болушу керек
-        />
-      </div>
-    ))}
-  </div>
+                {/* БИР НЕЧЕ СҮРӨТ URL КИРГИЗҮҮ */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <ImageIcon size={18} className="text-indigo-600" />
+                    <span className="text-[10px] font-black uppercase tracking-widest opacity-50">Сүрөттөр (максимум 4 даана)</span>
+                  </div>
 
-  {/* PREVIEW - БАРДЫК СҮРӨТТӨРДҮ КӨРҮҮ */}
-  <div className="flex gap-3 overflow-x-auto py-2">
-    {imagesList.map((url, index) => url && (
-      <div key={index} className="flex-shrink-0 w-20 h-20 rounded-xl border-2 border-slate-100 overflow-hidden bg-slate-50 shadow-sm relative group">
-        <img src={url} className="w-full h-full object-contain" alt="preview" onError={(e) => e.target.src = "https://placehold.co/100x100?text=Error"} />
-        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-[8px] font-bold">Preview</div>
-      </div>
-    ))}
-  </div>
-</div>
-                <button disabled={isSubmitting} className="w-full py-5 bg-slate-900 text-white rounded-[2rem] font-black uppercase tracking-widest hover:bg-indigo-600 transition-all shadow-xl active:scale-95 disabled:opacity-50">
-                  {isSubmitting ? 'Жүктөлүүдө...' : 'Товарды кошуу'}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {imagesList.map((url, index) => (
+                      <div key={index} className="relative">
+                        <div className="absolute left-4 top-4 text-slate-400 text-[10px] font-black">{index + 1}</div>
+                        <input
+                          className="w-full pl-12 pr-4 py-4 bg-slate-50 rounded-2xl outline-none ring-1 ring-slate-200 focus:ring-2 focus:ring-indigo-500 transition-all text-sm"
+                          placeholder={`Сүрөт URL ${index + 1}`}
+                          value={url}
+                          onChange={(e) => {
+                            const newImages = [...imagesList];
+                            newImages[index] = e.target.value;
+                            setImagesList(newImages);
+                          }}
+                          required={index === 0} // Биринчи сүрөт сөзсүз болушу керек
+                        />
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* PREVIEW - БАРДЫК СҮРӨТТӨРДҮ КӨРҮҮ */}
+                  <div className="flex gap-3 overflow-x-auto py-2">
+                    {imagesList.map((url, index) => url && (
+                      <div key={index} className="flex-shrink-0 w-20 h-20 rounded-xl border-2 border-slate-100 overflow-hidden bg-slate-50 shadow-sm relative group">
+                        <img src={url} className="w-full h-full object-contain" alt="preview" onError={(e) => e.target.src = "https://placehold.co/100x100?text=Error"} />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-[8px] font-bold">Preview</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <button
+                  disabled={isSubmitting}
+                  className="w-full py-5 bg-slate-900 text-white rounded-[2rem] font-black uppercase tracking-widest hover:bg-indigo-600 transition-all shadow-xl active:scale-95 disabled:opacity-50"
+                >
+                  {isSubmitting ? 'Жүктөлүүдө...' : (editingProductId ? 'Өзгөртүүнү сактоо' : 'Товарды кошуу')}
                 </button>
               </form>
             </div>
           )}
 
-          {/* MANAGE TAB */}
           {activeTab === 'manage' && (
             <div className="space-y-6">
               <h3 className="text-2xl font-black italic uppercase">Товарлар ({products.length})</h3>
@@ -226,12 +317,24 @@ const [imagesList, setImagesList] = useState(["", "", "", ""]);
                         <p className="text-indigo-600 font-black text-xs">{item.price} сом</p>
                       </div>
                     </div>
-                    <button
-                      onClick={() => handleDeleteProduct(item.id)}
-                      className="p-4 text-slate-300 hover:text-red-500 transition-all"
-                    >
-                      <Trash2 size={22} />
-                    </button>
+
+                    <div className="flex items-center gap-2">
+                      {/* ОҢДОО БАСКЫЧЫ */}
+                      <button
+                        onClick={() => handleEditMode(item)}
+                        className="p-3 text-slate-300 hover:text-indigo-500 transition-all"
+                      >
+                        <Pencil size={20} />
+                      </button>
+
+                      {/* ӨЧҮРҮҮ БАСКЫЧЫ */}
+                      <button
+                        onClick={() => handleDelete(item.id)}
+                        className="p-3 text-slate-300 hover:text-red-500 transition-all"
+                      >
+                        <Trash2 size={22} />
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
