@@ -1,9 +1,10 @@
 import React from 'react';
 import { Timer, Star, Users, Wrench } from 'lucide-react';
+// const items = products.filter(p => p.category === 'Living Room').slice(0, 4);
 
 const LivingRoom = ({ products, ProductCard, setActiveCategory, t }) => {
   const items = products.filter(p => p.category === 'Living Room').slice(0, 4);
-  
+
   if (items.length === 0) return null;
 
   return (
@@ -13,7 +14,7 @@ const LivingRoom = ({ products, ProductCard, setActiveCategory, t }) => {
           <p className="text-indigo-600 text-[10px] font-black uppercase mb-1 tracking-widest">Collection</p>
           <h2 className="text-2xl font-black uppercase italic">{t?.living || "Living Room"}</h2>
         </div>
-        <button onClick={() => setActiveCategory('Living Room')} className="text-indigo-600 text-[10px] font-bold uppercase border-b border-indigo-600 pb-1">
+        <button onClick={() => setActiveCategory('Living Room')}>
           {t?.viewAll || "Бардыгы"} →
         </button>
       </div>
@@ -22,7 +23,7 @@ const LivingRoom = ({ products, ProductCard, setActiveCategory, t }) => {
         {items.map(item => <ProductCard key={item.id} item={item} />)}
       </div>
 
-     
+
     </section>
   );
 };

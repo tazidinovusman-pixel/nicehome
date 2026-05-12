@@ -5,11 +5,11 @@ import { LanguageContext } from '../App';
 
 const categories = [
   { id: 'all', key: 'all', name: 'All', icon: <LayoutGrid size={20} /> },
-  { id: 'living', key: 'living', name: 'Living Room', icon: <Sofa size={20} /> },
+  { id: 'Living Room', key: 'living', name: 'Living Room', icon: <Sofa size={20} /> },
   { id: 'kitchen', key: 'kitchen', name: 'Kitchen', icon: <UtensilsCrossed size={20} /> },
   { id: 'bedroom', key: 'bedroom', name: 'Bedroom', icon: <BedDouble size={20} /> },
   { id: 'bathroom', key: 'bathroom', name: 'Bathroom', icon: <Bath size={20} /> },
-  { id: 'kids', key: 'kids', name: 'Kids Room', icon: <Baby size={20} /> },
+  { id: 'Kids Room', key: 'kids', name: 'Kids Room', icon: <Baby size={20} /> },
   { id: 'hallway', key: 'hallway', name: 'Hallway', icon: <DoorOpen size={20} /> },
   { id: 'office', key: 'office', name: 'Office', icon: <Laptop size={20} /> },
   { id: 'garden', key: 'garden', name: 'Garden', icon: <TreePine size={20} /> },
@@ -21,7 +21,7 @@ const CategoryBar = ({ activeCategory, setActiveCategory }) => {
   const t = translations[lang].categories;
 
   const handleCategoryClick = (categoryName) => {
-    setActiveCategory(categoryName); 
+    setActiveCategory(categoryName);
     if (categoryName === 'All') {
       navigate('/');
     } else {
@@ -48,14 +48,14 @@ const CategoryBar = ({ activeCategory, setActiveCategory }) => {
               </div>
               <span className={`text-[9px] font-black uppercase tracking-widest ${activeCategory === cat.name ? 'text-indigo-600' : (darkMode ? 'text-slate-500' : 'text-slate-900')}`}>
                 {t[cat.key]}
-                
+
               </span>
             </button>
           ))}
-          
+
         </div>
       </div>
-      
+
     </div>
   );
 };

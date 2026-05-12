@@ -17,7 +17,7 @@ import {
 import { supabase } from './api/supabaseClient';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
-import Checkout from './pages/Home/Checkout';
+// import Checkout from './pages/Home/Checkout';
 
 // МААНИЛҮҮ: Контекстти өзүнчө файлдан алуу керек (Circular Dependency болбошу үчүн)
 // Бирок азырынча App ичинде калтырсаңыз, импортту өчүрүп, төмөнкүдөй кылыңыз:
@@ -264,7 +264,7 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/auth" element={user ? <Navigate to="/profile" /> : <Auth />} />
                 <Route path="/cart" element={<Cart />} />
-                <Route path="/checkout" element={<Checkout />} />
+                {/* <Route path="/checkout" element={<Checkout />} /> */}
                 <Route path="/favorites" element={<Favorites />} />
                 <Route path="/profile" element={user ? <Profile /> : <Navigate to="/auth" />} />
                 <Route path="/product/:id" element={<ProductDetail />} />
