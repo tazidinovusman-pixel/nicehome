@@ -29,21 +29,27 @@ const translations = {
     back: "Артка", new_model: "Жаңы модель", price_tag: "сом", model: "Модель",
     date: "Дата", add_to_cart: "Себетке кошуу", similar_products: "Окшош товарлар",
     loading: "Издөөдө...",
-    categories: { all: "Баары", living: "Конок бөлмө", kitchen: "Ашкана", bedroom: "Уктоочу бөлмө", bathroom: "Ванна", kids: "Балдар бөлмөсү", hallway: "Кире бериш", office: "Иш бөлмө", garden: "Бакча" }
+    categories: { all: "Баары", living: "Конок бөлмө", kitchen: "Ашкана", bedroom: "Уктоочу бөлмө", bathroom: "Ванна", kids: "Балдар бөлмөсү", hallway: "Кире бериш", office: "Иш бөлмө", garden: "Бакча" ,viewAll: "Бардыгы",},
+    
+   
   },
   RU: {
     shop: "Магазин", admin: "Админ", profile: "Профиль", login: "Войти", search: "Поиск...",
     back: "Назад", new_model: "Новая модель", price_tag: "сом", model: "Модель",
     date: "Дата", add_to_cart: "Добавить в корзину", similar_products: "Похожие товары",
     loading: "Загрузка...",
-    categories: { all: "Все", living: "Гостиная", kitchen: "Кухня", bedroom: "Спальня", bathroom: "Ванная", kids: "Детская", hallway: "Прихожая", office: "Кабинет", garden: "Сад" }
+    categories: { all: "Все", living: "Гостиная", kitchen: "Кухня", bedroom: "Спальня", bathroom: "Ванная", kids: "Детская", hallway: "Прихожая", office: "Кабинет", garden: "Сад", viewAll: "Все",
+ },
+   
   },
   EN: {
     shop: "Store", admin: "Admin", profile: "Profile", login: "Login", search: "Search...",
     back: "Back", new_model: "New Model", price_tag: "som", model: "Model",
     date: "Date", add_to_cart: "Add to cart", similar_products: "Similar products",
     loading: "Loading...",
-    categories: { all: "All", living: "Living Room", kitchen: "Kitchen", bedroom: "Bedroom", bathroom: "Bathroom", kids: "Kids Room", hallway: "Hallway", office: "Office", garden: "Garden" }
+    categories: { all: "All", living: "Living Room", kitchen: "Kitchen", bedroom: "Bedroom", bathroom: "Bathroom", kids: "Kids Room", hallway: "Hallway", office: "Office", garden: "Garden"   , viewAll: "View All",},
+   
+
   }
 };
 
