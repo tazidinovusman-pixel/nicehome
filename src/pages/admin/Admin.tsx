@@ -75,13 +75,13 @@ const Admin = () => {
         category,
         year,
         description,
-        image_urls: finalImages, // Жаңы ачылган массив колонкасы
-        image_url: finalImages[0] // Эски коддор бузулбашы үчүн биринчи сүрөттү бул жерге да сактап кой
+        image_urls: finalImages, 
+        image_url: finalImages[0] 
       }]);
 
     if (!error) {
-      setImagesList(["", "", "", ""]); // Форманы тазалоо
-      // башка тазалоо коддору...
+      setImagesList(["", "", "", ""]); 
+      
     }
     setIsSubmitting(false);
   };

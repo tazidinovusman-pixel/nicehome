@@ -1,7 +1,7 @@
 import React from 'react';
 
 const KidsRoom = ({ products, ProductCard, setActiveCategory, t }) => {
-  // Базадагы категориянын аты 'Kids Room' экенин текшер
+ 
   const items = products.filter(p => p.category === 'Kids Room').slice(0, 4);
   if (items.length === 0) return null;
 
@@ -13,7 +13,7 @@ const KidsRoom = ({ products, ProductCard, setActiveCategory, t }) => {
             Collection
           </p>
           <h2 className="text-2xl font-black uppercase tracking-tighter italic">
-            {/* Тилге жараша "Детская" же "Kids Room" деп чыгат */}
+           
             {t?.kidsRoom || "Kids Room"}
           </h2>
         </div>

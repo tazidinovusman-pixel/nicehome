@@ -12,7 +12,7 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
           
-          {/* 1. БИЗ ЖӨНҮНДӨ */}
+
           <div className="space-y-4">
             <h3 className={`text-xs font-black uppercase tracking-[0.3em] ${darkMode ? 'text-white' : 'text-slate-900'}`}>
               NiceHome
@@ -24,7 +24,7 @@ const Footer = () => {
             </p>
           </div>
 
-          {/* 2. КАРДАРЛАР ҮЧҮН */}
+    
           <div className="space-y-4">
             <h3 className={`text-xs font-black uppercase tracking-widest ${darkMode ? 'text-white' : 'text-slate-900'}`}>
               {lang === 'KG' ? 'Кызматтар' : lang === 'RU' ? 'Сервис' : 'Customer Service'}

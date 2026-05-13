@@ -17,10 +17,6 @@ import {
 import { supabase } from './api/supabaseClient';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
-// import Checkout from './pages/Home/Checkout';
-
-// МААНИЛҮҮ: Контекстти өзүнчө файлдан алуу керек (Circular Dependency болбошу үчүн)
-// Бирок азырынча App ичинде калтырсаңыз, импортту өчүрүп, төмөнкүдөй кылыңыз:
 export const LanguageContext = createContext();
 
 const translations = {
@@ -91,7 +87,7 @@ const Navbar = ({ t, darkMode, setDarkMode, setIsMenuOpen, user, ADMIN_EMAIL, us
           </div>
 
           <div className="flex items-center gap-0.5 md:gap-2">
-            {/* Эми бул жер ката бербейт, анткени userRole жогоруда кабыл алынды */}
+          
             {(userRole === 'admin' || userRole === 'seller') && (
               <Link to="/admin" className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-colors">
                 <ShieldCheck size={18} className="animate-pulse" />
@@ -196,7 +192,7 @@ function App() {
   const t = translations[lang];
 
   return (
-    // КАТАНЫ ОҢДОО: LanguageContext.Provider колдонулушу керек, эгер LanguageProvider өзүнчө файлда болбосо
+   
     <LanguageContext.Provider value={{ user, lang, setLang, translations, darkMode, setDarkMode }}>
       <CartProvider>
         <Router>
@@ -213,13 +209,6 @@ function App() {
               userRole={userRole}
             />
 
-            {/* {(userRole === 'admin' || userRole === 'seller')
-            //  && (
-            //   <Link to="/admin" className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-colors">
-            //     <ShieldCheck size={18} className="animate-pulse" />
-            //   </Link>
-            // )
-            } */}
 
             {/* --- БУРГЕР МЕНЮ --- */}
             {isMenuOpen && (

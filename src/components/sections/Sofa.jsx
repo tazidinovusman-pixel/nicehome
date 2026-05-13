@@ -1,6 +1,5 @@
 import React from 'react';
 import { Timer, Star, Users, Wrench } from 'lucide-react';
-// const items = products.filter(p => p.category === 'Living Room').slice(0, 4);
 
 const LivingRoom = ({ products, ProductCard, setActiveCategory, t }) => {
   const items = products.filter(p => p.category === 'Living Room').slice(0, 4);

@@ -14,7 +14,7 @@ const Bedroom = ({ products, ProductCard, setActiveCategory, t }) => {
             Collection
           </p>
           <h2 className="text-2xl font-black uppercase italic">
-            {/* ТҮЗӨТҮҮ: t?.bedroom деп жаз */}
+            
             {t?.bedroom || "Bedroom"} 
           </h2>
         </div>

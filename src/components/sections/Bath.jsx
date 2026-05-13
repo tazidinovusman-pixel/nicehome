@@ -1,7 +1,7 @@
 import React from 'react';
 
 const Bathroom = ({ products, ProductCard, setActiveCategory, t }) => {
-  // 1. Фильтрлөө (Категория аты Supabase менен так келиши керек)
+
   const items = products.filter(p => p.category === 'Bathroom').slice(0, 4);
   
   if (items.length === 0) return null;
@@ -14,7 +14,7 @@ const Bathroom = ({ products, ProductCard, setActiveCategory, t }) => {
             Collection
           </p>
           <h2 className="text-2xl font-black uppercase italic">
-            {/* СӨЗСҮЗ ?. КОЛДОН: Бул катаны алдын алат */}
+           
             {t?.bathroom || "Bathroom"} 
           </h2>
         </div>

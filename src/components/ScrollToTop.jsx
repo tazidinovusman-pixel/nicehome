@@ -11,10 +11,10 @@ export default function ScrollToTop() {
       window.scrollTo({
         top: 0,
         left: 0,
-        behavior: "instant", // же "smooth" жумшак жылдыруу үчүн
+        behavior: "instant",
       });
     } catch (error) {
-      // Эски браузерлер үчүн жөнөкөй вариант
+
       window.scrollTo(0, 0);
     }
   }, [pathname]);

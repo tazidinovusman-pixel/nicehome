@@ -16,7 +16,7 @@ import HallwaySection from '../../components/sections/DoorOpen';
 import OfficeSection from '../../components/sections/Laptop';
 import GardenSection from '../../components/sections/TreePine';
 
-// --- КӨП МААЛЫМАТТУУ ЖАНА ДИЗАЙНДУУ БАННЕР ---
+
 const ServiceBanner = ({ serviceName, lang, variant = 1 }) => {
   const contacts = ["+996 (700) 11-22-33", "+996 (555) 00-99-88", "+996 (999) 77-66-55"];
   const randomPhone = contacts[variant % contacts.length];
@@ -109,7 +109,7 @@ const Home = () => {
 
   const ProductCard = ({ item }) => (
     <div className="group">
-      {/* Сүрөт бөлүгү - басканда жеке баракка өтөт */}
+   
       <div
         onClick={() => navigate(`/product/${item.id}`)}
         className={`aspect-[4/5] mb-4 relative flex items-center justify-center p-4 overflow-hidden rounded-3xl transition-all cursor-pointer shadow-sm hover:shadow-xl ${darkMode ? 'bg-slate-900 border border-slate-800' : 'bg-slate-50'}`}
@@ -122,9 +122,6 @@ const Home = () => {
             New
           </div>
         )}
-
-        {/* Favorite баскычы - бул баракка өткөрбөйт (e.stopPropagation) */}
-        {/* Favorite (Жүрөкчө) баскычы - Оң жакта, жогоруда */}
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -135,26 +132,26 @@ const Home = () => {
           <Heart className={`w-4 h-4 ${favorites?.some(f => f.id === item.id) ? 'fill-red-500 text-red-500' : 'text-slate-400'}`} />
         </button>
 
-        {/* Себетке кошуу (Plus) баскычы - Оң жакта, төмөндө */}
+    
         <button
           onClick={(e) => {
             e.stopPropagation();
             !user ? navigate('/auth') : addToCart(item);
           }}
-          /* md:opacity-0 - компьютерде чычканды алып барганда чыгат, телефондо дайыма көрүнөт */
+         
           className="absolute bottom-4 right-4 bg-slate-900 text-white p-3 shadow-lg rounded-2xl active:scale-90 md:opacity-0 md:group-hover:opacity-100 transition-all transform translate-y-0 z-20"
         >
           <Plus className="w-5 h-5" />
         </button>
       </div>
 
-      {/* Төмөнкү текст бөлүгү - басканда жеке баракка өтөт */}
+    
       <div className="px-1 cursor-pointer" onClick={() => navigate(`/product/${item.id}`)}>
         <p className="text-[8px] uppercase tracking-[0.2em] text-slate-400 mb-1">{item.category}</p>
         <h2 className="text-sm font-bold line-clamp-1 group-hover:text-indigo-600 transition-colors">{item.name}</h2>
         <div className="flex items-center justify-between mt-1">
           <p className="text-sm font-black text-indigo-600">{item.price} сом</p>
-          {/* Бул жерде жылды көрсөтүп койсоңуз болот (милдеттүү эмес) */}
+         
           <p className="text-[9px] text-slate-400 font-bold">{item.year}</p>
         </div>
       </div>
