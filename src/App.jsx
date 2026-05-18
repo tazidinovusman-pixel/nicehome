@@ -8,6 +8,7 @@ import Profile from './pages/Home/Profile';
 import Auth from './Auth/Auth';
 import ProductDetail from './pages/ProductDetail';
 import { CartProvider, useCart } from './context/CartContext';
+import Checkout from './pages/Cart';
 
 import {
   Heart, ShoppingBag, User, Sun, Moon, ShieldCheck, Menu, X,
@@ -259,7 +260,7 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/auth" element={user ? <Navigate to="/profile" /> : <Auth />} />
                 <Route path="/cart" element={<Cart />} />
-                {/* <Route path="/checkout" element={<Checkout />} /> */}
+                <Route path="/checkout" element={<Checkout />} />
                 <Route path="/favorites" element={<Favorites />} />
                 <Route path="/profile" element={user ? <Profile /> : <Navigate to="/auth" />} />
                 <Route path="/product/:id" element={<ProductDetail />} />
