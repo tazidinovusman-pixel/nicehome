@@ -13,7 +13,10 @@ const LivingRoom = ({ products, ProductCard, setActiveCategory, t }) => {
           <p className="text-indigo-600 text-[10px] font-black uppercase mb-1 tracking-widest">Collection</p>
           <h2 className="text-2xl font-black uppercase italic">{t?.living || "Living Room"}</h2>
         </div>
-        <button onClick={() => setActiveCategory('Office')} className="text-[10px] font-bold uppercase text-indigo-600 border-b border-indigo-600 pb-1">
+          <button 
+          onClick={() => setActiveCategory('Living Room')} 
+          className="text-[10px] font-bold uppercase text-indigo-600 border-b border-indigo-600 pb-1 tracking-widest hover:text-indigo-500 transition-colors"
+        >
           {t?.viewAll || "Бардыгы"} →
         </button>
       </div>
