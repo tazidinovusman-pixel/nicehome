@@ -107,56 +107,66 @@ const Home = () => {
     fetchProducts();
   }, [categoryParam, searchTerm]);
 
-  const ProductCard = ({ item }) => (
-    <div className="group">
-   
-      <div
-        onClick={() => navigate(`/product/${item.id}`)}
-        className={`aspect-[4/5] mb-4 relative flex items-center justify-center p-4 overflow-hidden rounded-3xl transition-all cursor-pointer shadow-sm hover:shadow-xl ${darkMode ? 'bg-slate-900 border border-slate-800' : 'bg-slate-50'}`}
-      >
-        <img src={item.image_url} alt={item.name} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" />
+ const ProductCard = ({ item }) => (
+  <div className="group">
+    <div
+      onClick={() => navigate(`/product/${item.id}`)}
+      className={`aspect-[4/5] mb-4 relative flex items-center justify-center overflow-hidden rounded-3xl transition-all cursor-pointer shadow-sm hover:shadow-xl ${
+        darkMode ? 'bg-slate-900 border border-slate-800' : 'bg-slate-50'
+      }`}
+    >
+      {/* Сен каалагандай object-cover жана scale-102 менен таза сүрөт */}
+      <img 
+        src={item.image_url} 
+        alt={item.name} 
+        className="w-full h-full object-cover  group-hover:scale-102 transition-transform duration-300" 
+      />
 
-        {/* "ЖАҢЫ" белгиси - эгер базада is_new true болсо гана чыгат */}
-        {item.is_new && (
-          <div className="absolute top-4 left-4 bg-green-500 text-white text-[8px] font-black px-2 py-1 rounded-lg uppercase tracking-widest shadow-lg">
-            New
-          </div>
-        )}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            !user ? navigate('/auth') : toggleFavorite(item);
-          }}
-          className="absolute top-4 right-4 p-2 bg-white/80 backdrop-blur-md rounded-full hover:bg-white transition-all shadow-sm z-20"
-        >
-          <Heart className={`w-4 h-4 ${favorites?.some(f => f.id === item.id) ? 'fill-red-500 text-red-500' : 'text-slate-400'}`} />
-        </button>
-
-    
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            !user ? navigate('/auth') : addToCart(item);
-          }}
-         
-          className="absolute bottom-4 right-4 bg-slate-900 text-white p-3 shadow-lg rounded-2xl active:scale-90 md:opacity-0 md:group-hover:opacity-100 transition-all transform translate-y-0 z-20"
-        >
-          <Plus className="w-5 h-5" />
-        </button>
-      </div>
-
-    
-      <div className="px-1 cursor-pointer" onClick={() => navigate(`/product/${item.id}`)}>
-        <p className="text-[8px] uppercase tracking-[0.2em] text-slate-400 mb-1">{item.category}</p>
-        <h2 className="text-sm font-bold line-clamp-1 group-hover:text-indigo-600 transition-colors">{item.name}</h2>
-        <div className="flex items-center justify-between mt-1">
-          <p className="text-sm font-black text-indigo-600">{item.price} сом</p>
-         
-          <p className="text-[9px] text-slate-400 font-bold">{item.year}</p>
+      {/* "ЖАҢЫ" белгиси */}
+      {item.is_new && (
+        <div className="absolute top-3 left-3 bg-green-500 text-white text-[8px] font-black px-2 py-1 rounded-lg uppercase tracking-widest shadow-lg z-20">
+          New
         </div>
+      )}
+
+      {/* Сен каалагандай чакан жана назик Жүрөк баскычы */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          !user ? navigate('/auth') : toggleFavorite(item);
+        }}
+        className="absolute top-2 right-2 bg-white/80 backdrop-blur-md p-1.5 rounded-full shadow-xs active:scale-95 transition-transform z-20"
+      >
+        <Heart 
+          className={`w-3.5 h-3.5 ${
+            favorites?.some(f => f.id === item.id) ? 'fill-red-500 text-red-500' : 'text-slate-400'
+          }`} 
+        />
+      </button>
+
+      {/* Сатып алуу (+) баскычы */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          !user ? navigate('/auth') : addToCart(item);
+        }}
+        className="absolute bottom-4 right-4 bg-slate-900 text-white p-3 shadow-lg rounded-2xl active:scale-90 md:opacity-0 md:group-hover:opacity-100 transition-all transform translate-y-0 z-20"
+      >
+        <Plus className="w-5 h-5" />
+      </button>
+    </div>
+
+    {/* Товардын маалыматтары (Аты, баасы) */}
+    <div className="px-1 cursor-pointer" onClick={() => navigate(`/product/${item.id}`)}>
+      <p className="text-[8px] uppercase tracking-[0.2em] text-slate-400 mb-1">{item.category}</p>
+      <h2 className="text-sm font-bold line-clamp-1 group-hover:text-indigo-600 transition-colors">{item.name}</h2>
+      <div className="flex items-center justify-between mt-1">
+        <p className="text-sm font-black text-indigo-600">{item.price} сом</p>
+        <p className="text-[9px] text-slate-400 font-bold">{item.year}</p>
       </div>
     </div>
-  );
+  </div>
+);
   if (loading) return (
     <div className="flex justify-center items-center h-96">
       <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
