@@ -45,7 +45,6 @@ const translations = {
     date: "Date", add_to_cart: "Add to cart", similar_products: "Similar products",
     loading: "Loading...",
     categories: { all: "All", living: "Living Room", kitchen: "Kitchen", bedroom: "Bedroom", bathroom: "Bathroom", kids: "Kids Room", hallway: "Hallway", office: "Office", garden: "Garden"   , viewAll: "View All",},
-   
 
   }
 };

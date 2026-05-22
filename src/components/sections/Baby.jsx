@@ -18,7 +18,7 @@ const KidsRoom = ({ products, ProductCard, setActiveCategory, t }) => {
           </h2>
         </div>
        <button 
-          onClick={() => setActiveCategory('Bathroom')} 
+          onClick={() => setActiveCategory('Kids Room')} 
           className="text-indigo-600 text-[10px] font-bold uppercase border-b border-indigo-600 pb-1"
         >
           {t?.viewAll || "Бардыгы"} →

@@ -23,6 +23,7 @@ const Footer = () => {
                'Our store offers you the most beautiful and high-quality furniture. Bring warmth to your home.'}
             </p>
           </div>
+          
 
     
           <div className="space-y-4">
@@ -51,7 +52,15 @@ const Footer = () => {
                 <Mail size={12} className="text-indigo-500" /> nicehome@gmail.com
               </div>
               <div className="flex items-center gap-2 text-[10px]">
-                <MapPin size={12} className="text-indigo-500" /> Бишкек, Күрөңкөева 123
+                 {/* 📍 ДАРЕК: Басканда жаңы баракта 2GIS же Яндекс Карта ачылат */}
+            <a
+              href="https://go.2gis.com/frkYh" // 👈 Бул жерге өзүңүздүн дүкөндүн так координаттарын же дарегин жазыңыз
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-indigo-600 transition-colors flex items-center gap-1 font-medium"
+            >
+              📍 Бишкек,Зайсановский переулок {/* Сүрөттөгү дарек */}
+            </a>
               </div>
               <div className="flex items-center gap-2 text-[10px] pt-2 border-t border-slate-100 dark:border-slate-800 w-fit">
                 <Clock size={12} className="text-slate-400" /> 

@@ -75,22 +75,25 @@ const Admin = () => {
         category,
         year,
         description,
-        image_urls: finalImages, 
-        image_url: finalImages[0] 
+        image_urls: finalImages,
+        image_url: finalImages[0],
+        is_new: isNew,
+        // false
+
       }]);
 
     if (!error) {
-      setImagesList(["", "", "", ""]); 
-      
+      setImagesList(["", "", "", ""]);
+
     }
     setIsSubmitting(false);
   };
   // 2. Оңдоо режимин иштетүү (Add өтмөгүнө жөнөтөт)
   const handleEditMode = (product) => {
     setEditingProductId(product.id); // ID сөзсүз сакталышы керек
-  setActiveTab('add');
     setActiveTab('add');
-    
+    setActiveTab('add');
+
     setName(product.name);
     setPrice(product.price);
     setCategory(product.category);
@@ -216,10 +219,10 @@ const Admin = () => {
               <div className="flex items-center gap-4 mb-10">
                 <div className="bg-indigo-600 p-3 rounded-2xl text-white shadow-lg"><PackagePlus /></div>
                 {/* <h3 className="text-2xl font-black italic">Жаңы товар кошуу</h3> */}
-               <h3 className="text-2xl font-black italic uppercase">
-  {/* Бул жерде editingProductId деп жазылганбы же ката (мисалы editId) кеткенби? */}
-  {editingProductId ? "Товарды оңдоо" : "Жаңы товар кошуу"}
-</h3>
+                <h3 className="text-2xl font-black italic uppercase">
+                  {/* Бул жерде editingProductId деп жазылганбы же ката (мисалы editId) кеткенби? */}
+                  {editingProductId ? "Товарды оңдоо" : "Жаңы товар кошуу"}
+                </h3>
               </div>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -256,6 +259,21 @@ const Admin = () => {
                   <FileText className="absolute left-4 top-4 text-slate-400" size={18} />
                   <textarea className="w-full pl-12 pr-4 py-4 bg-slate-50 rounded-2xl outline-none ring-1 ring-slate-200 focus:ring-2 focus:ring-indigo-500" placeholder="Толук сүрөттөмө..." value={description} onChange={(e) => setDescription(e.target.value)} rows={3} />
                 </div>
+                <div className="mb-4">
+                  <label className="flex items-center gap-4 p-4 bg-slate-50 border border-slate-100 rounded-2xl cursor-pointer hover:bg-slate-100/70 transition-all select-none">
+                    <input
+                      type="checkbox"
+                      id="is_new"
+                      checked={isNew} // 👈 Ката кеткен formData.is_new ордуна өзүнүн туура өзгөрмөсү коюлду
+                      onChange={(e) => setIsNew(e.target.checked)} // 👈 setIsNew функциясы туура иштетилет
+                      className="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500 cursor-pointer accent-indigo-600"
+                    />
+                    <span className="text-xs uppercase tracking-wider font-bold text-slate-600">
+                      Бул жаңы товар (Башкы бетке <span className="text-green-500">✨ NEW</span> белгисин чыгаруу)
+                    </span>
+                  </label>
+                </div>
+
                 {/* БИР НЕЧЕ СҮРӨТ URL КИРГИЗҮҮ */}
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 mb-2">
