@@ -245,3 +245,63 @@ const Home = () => {
 };
 
 export default Home;
+
+
+
+
+// const Home = () => {
+//   // ... (башка коддор өзгөрүүсүз калат)
+
+//   const categoryParam = searchParams.get('category') || 'all'; // Баштапкы маанисин кичинекей 'all' кылалы
+//   const searchTerm = searchParams.get('search') || '';
+
+//   // Сиздин кодуңуздагы setActiveCategory функциясы:
+//   const setActiveCategory = (category) => {
+//     const cat = category.toLowerCase().trim(); // боштуктарды тазалайт
+//     if (cat === 'all') {
+//       setSearchParams({});
+//     } else {
+//       setSearchParams({ category: cat });
+//     }
+//   };
+
+//   useEffect(() => {
+//     const fetchProducts = async () => {
+//       setLoading(true);
+//       let query = supabase.from('items').select('*');
+      
+//       // Эгер 'all' эмес болсо, базадан издейбиз
+//       if (categoryParam !== 'all') {
+//         // Эгер Supabase базаңызда категориялар "Living Room" же "Kids Room" деп чоң тамга менен жазылса,
+//         // анда төмөнкү 'ilike' чыпкасы баарын кичинекей тамга менен салыштырып, катасыз таап берет.
+//         query = query.ilike('category', categoryParam); 
+//       }
+      
+//       if (searchTerm) query = query.ilike('name', `%${searchTerm}%`);
+      
+//       const { data, error } = await query;
+//       if (error) console.error("Error fetching:", error);
+//       setProducts(data || []);
+//       setLoading(false);
+//     };
+//     fetchProducts();
+//   }, [categoryParam, searchTerm]);
+
+//   // ... (башка коддор өзгөрүүсүз калат)
+  
+//   return (
+//     // ...
+//     {categoryParam === 'all' && !searchTerm ? (
+//       <div className="space-y-16">
+//         {/* Бул жерде t.categories объектисине categoryParam туура өтүшү керек */}
+//         <SofaSection products={products} ProductCard={ProductCard} setActiveCategory={setActiveCategory} t={t.categories} />
+//         {/* Калган секциялар... */}
+//       </div>
+//     ) : (
+//       // Категория тандалгандагы код...
+//       <h2 className="text-4xl font-black uppercase italic tracking-tighter">
+//         {searchTerm ? `"${searchTerm}"` : (t.categories[categoryParam.toLowerCase()] || categoryParam)}
+//       </h2>
+//     )}
+//   );
+// };
