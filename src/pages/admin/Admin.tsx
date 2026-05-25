@@ -18,6 +18,7 @@ const Admin = () => {
   const [products, setProducts] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isFeatured, setIsFeatured] = useState(false);
 
   // Форма үчүн State'тер
   const [name, setName] = useState('');
@@ -54,6 +55,7 @@ const Admin = () => {
     setDescription('');
     setYear('2026');
     setIsNew(false);
+    setIsFeatured(false);
   };
   useEffect(() => {
     fetchData();
@@ -78,6 +80,7 @@ const Admin = () => {
         image_urls: finalImages,
         image_url: finalImages[0],
         is_new: isNew,
+        is_featured: isFeatured,
         // false
 
       }]);
@@ -259,6 +262,18 @@ const Admin = () => {
                   <FileText className="absolute left-4 top-4 text-slate-400" size={18} />
                   <textarea className="w-full pl-12 pr-4 py-4 bg-slate-50 rounded-2xl outline-none ring-1 ring-slate-200 focus:ring-2 focus:ring-indigo-500" placeholder="Толук сүрөттөмө..." value={description} onChange={(e) => setDescription(e.target.value)} rows={3} />
                 </div>
+                <div className="flex items-center gap-2 my-4 px-2">
+                  <input
+                    type="checkbox"
+                    id="featured"
+                    checked={isFeatured}
+                    onChange={(e) => setIsFeatured(e.target.checked)}
+                    className="w-5 h-5 accent-blue-600 cursor-pointer"
+                  />
+                  <label htmlFor="featured" className="text-sm font-medium text-slate-700 cursor-pointer select-none">
+                    Башкы беттке кошуу
+                  </label>
+                </div>
                 <div className="mb-4">
                   <label className="flex items-center gap-4 p-4 bg-slate-50 border border-slate-100 rounded-2xl cursor-pointer hover:bg-slate-100/70 transition-all select-none">
                     <input
@@ -269,7 +284,7 @@ const Admin = () => {
                       className="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500 cursor-pointer accent-indigo-600"
                     />
                     <span className="text-xs uppercase tracking-wider font-bold text-slate-600">
-                      Бул жаңы товар (Башкы бетке <span className="text-green-500">✨ NEW</span> белгисин чыгаруу)
+                       Жаңы товар ( <span className="text-green-500">✨ NEW</span> )
                     </span>
                   </label>
                 </div>
