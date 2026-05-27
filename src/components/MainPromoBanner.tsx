@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { supabase } from '../api/supabaseClient';
-import { useCart } from '../context/CartContext'; // 🔥 Сиздин бирдиктүү контекст
+import { useCart } from '../context/CartContext'; 
 import { ArrowUpRight, ChevronLeft, ChevronRight, X, ShoppingCart, Heart } from 'lucide-react';
+import { useNavigate } from 'react-router-dom'; // Баракчага багыттоо үчүн
 
 export default function MainPromoBanner() {
   const [banners, setBanners] = useState([]);
@@ -9,17 +10,29 @@ export default function MainPromoBanner() {
   const [loading, setLoading] = useState(true);
   const [currentImgIndex, setCurrentImgIndex] = useState(0);
   
+  // КАТТАЛГАНЫН ТЕКШЕРҮҮ ҮЧҮН STATE
+  const [user, setUser] = useState(null);
+
   // МОДАЛДЫК ТЕРЕЗЕНИ БАШКАРУУ
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSlide, setSelectedSlide] = useState(null);
 
-  // 🔥 Сиздин контексттен Себетке кошуу (addToCart) жана Избранноего кошуу (toggleFavorite) функцияларын алабыз
-  // Ошондой эле товар мурун кошулганбы же жокпу текшериш үчүн 'favorites' тизмесин да алабыз
   const { addToCart, toggleFavorite, favorites } = useCart(); 
-
+  const navigate = useNavigate(); 
   const timeoutRef = useRef(null);
 
   useEffect(() => {
+    // 1. Коноктун же катталган колдонуучунун сессиясын текшеребиз (кудум Profile.tsx сыяктуу)
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    // Сессия өзгөргөнүн дароо байкап туруу
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    // 2. Баннерлерди базадан тартып алуу
     const fetchBanners = async () => {
       const { data, error } = await supabase
         .from('banners')
@@ -29,20 +42,20 @@ export default function MainPromoBanner() {
 
       if (!error && data) {
         setBanners(data);
-        
         const imagesAccumulator = [];
         data.forEach(banner => {
           if (banner.image_url1) imagesAccumulator.push({ url: banner.image_url1, title: banner.title, desc: banner.description, item: banner });
           if (banner.image_url2) imagesAccumulator.push({ url: banner.image_url2, title: banner.title, desc: banner.description, item: banner });
           if (banner.image_url3) imagesAccumulator.push({ url: banner.image_url3, title: banner.title, desc: banner.description, item: banner });
-          if (banner.image_url4) imagesAccumulator.push({ url: banner.image_url4, title: banner.title, desc: banner.description, item: banner });
+          if (banner.image_url4) imagesAccumulator.push({ url: banner.image_url4, title: banner.description, item: banner });
         });
-        
         setAllImages(imagesAccumulator);
       }
       setLoading(false);
     };
+
     fetchBanners();
+    return () => subscription.unsubscribe();
   }, []);
 
   const resetTimeout = () => {
@@ -51,17 +64,14 @@ export default function MainPromoBanner() {
 
   useEffect(() => {
     if (allImages.length <= 1 || isModalOpen) return;
-
     resetTimeout();
     timeoutRef.current = setTimeout(() => {
       setCurrentImgIndex((prevIndex) => (prevIndex + 1) % allImages.length);
     }, 3500);
-
     return () => resetTimeout();
   }, [currentImgIndex, allImages, isModalOpen]);
 
   if (loading || allImages.length === 0) return null;
-
   const currentSlide = allImages[currentImgIndex];
 
   const nextSlide = (e) => {
@@ -76,15 +86,27 @@ export default function MainPromoBanner() {
     setCurrentImgIndex((prev) => (prev - 1 + allImages.length) % allImages.length);
   };
 
+  // 🔥 РЕКЛАМАНЫ ЖЕ "ТОЛУК МААЛЫМАТТЫ" БАСКАНДА ТЕКШЕРҮҮ
   const openPromoModal = () => {
+    if (!user) {
+      alert("Бул аракетти аткаруу үчүн алгач катталууңуз керек!");
+      navigate('/auth'); // 👈 Сиздин авторизация барагыңызга багыттайт
+      return;
+    }
     setSelectedSlide(currentSlide);
     setIsModalOpen(true);
   };
 
-  // 🔥 СЕБЕТКЕ (КОРЗИНА) СИЗДИН КОНТЕКСТ АРКЫЛУУ КОШУУ
+  // 🔥 СЕБЕТКЕ КОШУУ БАСЫЛГАНДА ТЕКШЕРҮҮ
   const handleAddToCart = (e, slide) => {
     e.stopPropagation();
     
+    if (!user) {
+      alert("Товарды себетке кошуу үчүн алгач катталууңуз керек!");
+      navigate('/auth'); // 👈 Бул жер дагы /auth болду
+      return;
+    }
+
     const productToCart = {
       id: slide.item.id || String(Date.now()), 
       name: slide.title, 
@@ -96,43 +118,41 @@ export default function MainPromoBanner() {
     if (typeof addToCart === 'function') {
       addToCart(productToCart); 
       alert(`"${slide.title}" себетке кошулду!`);
-    } else {
-      alert("Ката: Сиздин useCart() ичинде addToCart функциясы табылган жок.");
     }
   };
 
-  // 🔥 ИЗБРАННОЕГО СИЗДИН КОНТЕКСТ (toggleFavorite) АРКЫЛУУ КОШУУ
+  // 🔥 ИЗБРАННОЕ БАСЫЛГАНДА ТЕКШЕРҮҮ
   const handleAddToFavorites = (e, slide) => {
     e.stopPropagation();
     
+    if (!user) {
+      alert("Тандалгандарга кошуу үчүн алгач катталууңуз керек!");
+      navigate('/auth'); // 👈 Бул жер дагы /auth болду
+      return;
+    }
+
     const productToFav = {
       id: slide.item.id || String(Date.now()),
-      name: slide.title, // Favorites.tsx файлыңыздагы item.name ушул жерден окулат
+      name: slide.title,
       price: Number(slide.item.price) || 0,
       image_url: slide.url
     };
 
     if (typeof toggleFavorite === 'function') {
-      // Сиздин контексттеги toggleFavorite функциясын чакырабыз
       toggleFavorite(productToFav);
-      
-      // Товар мурун тизмеде бар беле же жокпу текшерип, билдирүү чыгарабыз
       const isAlreadyFav = favorites?.some(item => item.id === productToFav.id);
       if (isAlreadyFav) {
         alert(`"${slide.title}" тандалгандардан өчүрүлдү.`);
       } else {
         alert(`"${slide.title}" тандалгандарга кошулду!`);
       }
-    } else {
-      alert("Ката: Сиздин useCart() ичинде toggleFavorite функциясы табылган жок.");
     }
   };
 
-  // Учурдагы товар Избранное тизмесинде бар же жогун текшерүү (жүрөкчөнүн өңүн өзгөртүү үчүн)
   const isCurrentItemFavorite = favorites?.some(item => item.id === selectedSlide?.item?.id);
 
   return (
-   <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 mt-4 mb-6">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 mt-4 mb-6">
       {/* БАННЕР КОРПУСУ */}
       <div 
         onClick={openPromoModal}
@@ -180,14 +200,12 @@ export default function MainPromoBanner() {
             </p>
           )}
 
-          {/* 🔥 БУЛ ЖЕРДЕ БААСЫ БАННЕРДИН ӨЗҮНДӨ ДА КӨРҮНӨТ */}
-          {currentSlide.item.price && (
+          {currentSlide.item?.price && (
             <p className="text-lg md:text-2xl font-black text-amber-400 mt-1">
               {currentSlide.item.price} сом
             </p>
           )}
 
-          {/* "Толук маалымат" баскычына да openPromoModal функциясын байладык */}
           <button 
             onClick={(e) => { e.stopPropagation(); openPromoModal(); }}
             className="mt-2 flex items-center gap-1.5 bg-white text-slate-900 hover:bg-indigo-600 hover:text-white font-bold text-xs uppercase tracking-wider px-5 py-3 rounded-xl transition-all duration-300 shadow-lg w-full sm:w-auto justify-center"
@@ -218,7 +236,7 @@ export default function MainPromoBanner() {
         )}
       </div>
 
-      {/* 🔥 МОДАЛДЫК ТЕРЕЗЕ (БААСЫ МЕНЕН ОҢДОЛДУ) */}
+      {/* МОДАЛДЫК ТЕРЕЗЕ */}
       {isModalOpen && selectedSlide && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in" onClick={() => setIsModalOpen(false)}>
           <div 
@@ -245,8 +263,7 @@ export default function MainPromoBanner() {
                   {selectedSlide.title}
                 </h3>
                 
-                {/* 🔥 МОДАЛКАДАГЫ КООЗ БААСЫ (СОМ) */}
-                {selectedSlide.item.price && (
+                {selectedSlide.item?.price && (
                   <p className="text-2xl font-black text-blue-600">
                     {selectedSlide.item.price} сом
                   </p>
@@ -267,9 +284,13 @@ export default function MainPromoBanner() {
                 
                 <button 
                   onClick={(e) => handleAddToFavorites(e, selectedSlide)}
-                  className="p-3.5 border border-slate-200 hover:border-red-500 hover:bg-red-50 text-slate-500 hover:text-red-500 rounded-xl transition-all flex items-center justify-center active:scale-95"
+                  className={`p-3.5 border rounded-xl transition-all flex items-center justify-center active:scale-95 ${
+                    isCurrentItemFavorite 
+                      ? 'border-red-500 bg-red-50 text-red-500' 
+                      : 'border-slate-200 hover:border-red-500 hover:bg-red-50 text-slate-500 hover:text-red-500'
+                  }`}
                 >
-                  <Heart size={18} />
+                  <Heart size={18} className={isCurrentItemFavorite ? "fill-current" : ""} />
                 </button>
               </div>
             </div>
