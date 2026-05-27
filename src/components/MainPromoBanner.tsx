@@ -165,7 +165,7 @@ export default function MainPromoBanner() {
               key={idx}
               src={slide.url} 
               alt={slide.title} 
-              className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-1000 ease-in-out ${idx === currentImgIndex ? 'opacity-85' : 'opacity-0'}`}
+              className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-1000 ease-in-out ${idx === currentImgIndex ? 'opacity-100' : 'opacity-0'}`}
             />
           ))}
           <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent" />

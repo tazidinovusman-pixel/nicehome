@@ -7,7 +7,7 @@ import {
   FileText, Calendar, Sparkles, Mail, UserCircle,
   Pencil
 } from 'lucide-react';
-
+import AdminBanners from '../../pages/AdminBanners';
 
 const Admin = () => {
   const { lang, translations, userRole, user } = useContext(LanguageContext);
@@ -31,39 +31,41 @@ const Admin = () => {
   const [isNew, setIsNew] = useState(false);
 
   const [bannerTitle, setBannerTitle] = useState('');
-const [bannerDesc, setBannerDesc] = useState('');
-const [bannerImage1, setBannerImage1] = useState('');
-const [bannerImage2, setBannerImage2] = useState('');
-const [bannerImage3, setBannerImage3] = useState('');
-const [bannerImage4, setBannerImage4] = useState('');
-const [bannerLink, setBannerLink] = useState('');
+  const [bannerDesc, setBannerDesc] = useState('');
+  const [bannerImage1, setBannerImage1] = useState('');
+  const [bannerImage2, setBannerImage2] = useState('');
+  const [bannerImage3, setBannerImage3] = useState('');
+  const [bannerImage4, setBannerImage4] = useState('');
+  const [bannerLink, setBannerLink] = useState('');
+  const [bannerPrice, setBannerPrice] = useState('');
 
-const handleAddBanner = async (e) => {
-  e.preventDefault();
-  if (!bannerTitle || !bannerImage1) return alert("Аты менен биринчи сүрөттү сөзсүз киргизиңиз!");
+  const handleAddBanner = async (e) => {
+    e.preventDefault();
+    if (!bannerTitle || !bannerImage1) return alert("Аты менен биринчи сүрөттү сөзсүз киргизиңиз!");
 
-  const { error } = await supabase
-    .from('banners')
-    .insert([{ 
-      title: bannerTitle, 
-      description: bannerDesc, 
-      image_url1: bannerImage1, 
-      image_url2: bannerImage2, 
-      image_url3: bannerImage3, 
-      image_url4: bannerImage4, 
-      link_to: bannerLink,
-      is_active: true 
-    }]);
+    const { error } = await supabase
+      .from('banners')
+      .insert([{
+        title: bannerTitle,
+        description: bannerDesc,
+        price: Number(bannerPrice) || 0,
+        image_url1: bannerImage1,
+        image_url2: bannerImage2,
+        image_url3: bannerImage3,
+        image_url4: bannerImage4,
+        link_to: bannerLink,
+        is_active: true
+      }]);
 
-  if (error) {
-    alert("Ката кетти: " + error.message);
-  } else {
-    alert("Жаңы жарнамалык слайдер ийгиликтүү кошулду!");
-    setBannerTitle(''); setBannerDesc(''); 
-    setBannerImage1(''); setBannerImage2(''); setBannerImage3(''); setBannerImage4('');
-    setBannerLink('');
-  }
-};
+    if (error) {
+      alert("Ката кетти: " + error.message);
+    } else {
+      alert("Жаңы жарнамалык слайдер ийгиликтүү кошулду!");
+      setBannerTitle(''); setBannerDesc('');
+      setBannerImage1(''); setBannerImage2(''); setBannerImage3(''); setBannerImage4('');
+      setBannerLink('');
+    }
+  };
 
   const fetchData = async () => {
     try {
@@ -228,24 +230,34 @@ const handleAddBanner = async (e) => {
       <div className={`fixed inset-y-0 left-0 z-50 w-72 bg-slate-900 text-white transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:relative lg:translate-x-0`}>
         <div className="p-8 flex flex-col h-full">
           <h2 className="text-xl font-black italic text-indigo-400 mb-12 flex items-center gap-2 uppercase tracking-tighter">
-            <LayoutDashboard /> Salmon Admin
+            <LayoutDashboard />  Admin
           </h2>
           <nav className="flex-grow space-y-3">
-            <button onClick={() => setActiveTab('add')} className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl font-bold text-xs uppercase tracking-widest transition-all ${activeTab === 'add' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/50' : 'text-slate-400 hover:bg-slate-800'}`}>
+            <button onClick={() => { setActiveTab('add'); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl font-bold text-xs uppercase tracking-widest transition-all ${activeTab === 'add' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/50' : 'text-slate-400 hover:bg-slate-800'}`}>
               <PlusCircle size={20} /> {t.add_product}
             </button>
-            <button onClick={() => setActiveTab('manage')} className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl font-bold text-xs uppercase tracking-widest transition-all ${activeTab === 'manage' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/50' : 'text-slate-400 hover:bg-slate-800'}`}>
+            <button onClick={() => { setActiveTab('manage'); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl font-bold text-xs uppercase tracking-widest transition-all ${activeTab === 'manage' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/50' : 'text-slate-400 hover:bg-slate-800'}`}>
               <Package size={20} /> {t.manage}
             </button>
-            <button onClick={() => setActiveTab('users')} className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl font-bold text-xs uppercase tracking-widest transition-all ${activeTab === 'users' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/50' : 'text-slate-400 hover:bg-slate-800'}`}>
+            <button onClick={() => { setActiveTab('users'); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl font-bold text-xs uppercase tracking-widest transition-all ${activeTab === 'users' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/50' : 'text-slate-400 hover:bg-slate-800'}`}>
               <Users size={20} /> {t.customers}
             </button>
-            {/* ЖАРНАМАЛАР БАСКЫЧЫ */}
+            {/* 🔥 1. ЖАРНАМА КУРУУ / КОШУУ БАСКЫЧЫ */}
             <button
-              onClick={() => setActiveTab('banners')}
-              className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl font-bold text-xs uppercase tracking-widest transition-all ${activeTab === 'banners' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:bg-slate-800'}`}
+              onClick={() => { setActiveTab('banners'); setIsSidebarOpen(false); }} // Кошумча жабылуу функциясы кошулду
+              className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl font-bold text-xs uppercase tracking-widest transition-all ${activeTab === 'banners' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/50' : 'text-slate-400 hover:bg-slate-800'
+                }`}
             >
-              <span className="text-lg">📢</span> ЖАРНАМАЛАР
+              <span className="text-base">📢</span> ЖАРНАМАЛАР
+            </button>
+
+            {/* 🔥 2. ЖАРНАМАЛАРДЫ БАШКАРУУ / ӨЧҮРҮҮ БАСКЫЧЫ */}
+            <button
+              onClick={() => { setActiveTab('manage_banners'); setIsSidebarOpen(false); }} // Кошумча жабылуу функциясы кошулду
+              className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl font-bold text-xs uppercase tracking-widest transition-all ${activeTab === 'manage_banners' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/50' : 'text-slate-400 hover:bg-slate-800'
+                }`}
+            >
+              <span className="text-base">🛠️</span> ЖАРНАМАЛАРДЫ БАШКАРУУ
             </button>
           </nav>
         </div>
@@ -467,6 +479,16 @@ const handleAddBanner = async (e) => {
                   <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Кыскача маалымат (Описание)</label>
                   <textarea value={bannerDesc} onChange={(e) => setBannerDesc(e.target.value)} className="w-full p-4 mt-1 bg-slate-50 border border-transparent rounded-2xl outline-none focus:border-indigo-500 text-sm font-medium h-20 resize-none" placeholder="Жарнама боюнча кыскача текст..." />
                 </div>
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Товордун баасы (Сом менен)</label>
+                  <input
+                    type="number"
+                    value={bannerPrice || ''}
+                    onChange={(e) => setBannerPrice(e.target.value)}
+                    className="w-full p-4 mt-1 bg-slate-50 border border-transparent rounded-2xl outline-none focus:border-indigo-500 text-sm font-medium"
+                    placeholder="Мисалы: 70"
+                  />
+                </div>
 
                 {/* СҮРӨТТӨРДҮ КИРГИЗҮҮ */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -499,6 +521,7 @@ const handleAddBanner = async (e) => {
               </form>
             </div>
           )}
+          {activeTab === 'manage_banners' && <AdminBanners />}
         </main>
       </div>
     </div>
