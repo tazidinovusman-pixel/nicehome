@@ -30,6 +30,41 @@ const Admin = () => {
   const [year, setYear] = useState('2026');
   const [isNew, setIsNew] = useState(false);
 
+  const [bannerTitle, setBannerTitle] = useState('');
+const [bannerDesc, setBannerDesc] = useState('');
+const [bannerImage1, setBannerImage1] = useState('');
+const [bannerImage2, setBannerImage2] = useState('');
+const [bannerImage3, setBannerImage3] = useState('');
+const [bannerImage4, setBannerImage4] = useState('');
+const [bannerLink, setBannerLink] = useState('');
+
+const handleAddBanner = async (e) => {
+  e.preventDefault();
+  if (!bannerTitle || !bannerImage1) return alert("Аты менен биринчи сүрөттү сөзсүз киргизиңиз!");
+
+  const { error } = await supabase
+    .from('banners')
+    .insert([{ 
+      title: bannerTitle, 
+      description: bannerDesc, 
+      image_url1: bannerImage1, 
+      image_url2: bannerImage2, 
+      image_url3: bannerImage3, 
+      image_url4: bannerImage4, 
+      link_to: bannerLink,
+      is_active: true 
+    }]);
+
+  if (error) {
+    alert("Ката кетти: " + error.message);
+  } else {
+    alert("Жаңы жарнамалык слайдер ийгиликтүү кошулду!");
+    setBannerTitle(''); setBannerDesc(''); 
+    setBannerImage1(''); setBannerImage2(''); setBannerImage3(''); setBannerImage4('');
+    setBannerLink('');
+  }
+};
+
   const fetchData = async () => {
     try {
       let productQuery = supabase.from('items').select('*').order('id', { ascending: false });
@@ -45,6 +80,7 @@ const Admin = () => {
       console.error("Fetch error:", err);
     }
   };
+
   // 1. Форманы тазалоо
   const clearForm = () => {
     setEditingProductId(null);
@@ -204,6 +240,13 @@ const Admin = () => {
             <button onClick={() => setActiveTab('users')} className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl font-bold text-xs uppercase tracking-widest transition-all ${activeTab === 'users' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/50' : 'text-slate-400 hover:bg-slate-800'}`}>
               <Users size={20} /> {t.customers}
             </button>
+            {/* ЖАРНАМАЛАР БАСКЫЧЫ */}
+            <button
+              onClick={() => setActiveTab('banners')}
+              className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl font-bold text-xs uppercase tracking-widest transition-all ${activeTab === 'banners' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:bg-slate-800'}`}
+            >
+              <span className="text-lg">📢</span> ЖАРНАМАЛАР
+            </button>
           </nav>
         </div>
       </div>
@@ -284,9 +327,10 @@ const Admin = () => {
                       className="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500 cursor-pointer accent-indigo-600"
                     />
                     <span className="text-xs uppercase tracking-wider font-bold text-slate-600">
-                       Жаңы товар ( <span className="text-green-500">✨ NEW</span> )
+                      Жаңы товар ( <span className="text-green-500">✨ NEW</span> )
                     </span>
                   </label>
+
                 </div>
 
                 {/* БИР НЕЧЕ СҮРӨТ URL КИРГИЗҮҮ */}
@@ -406,6 +450,53 @@ const Admin = () => {
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+          {activeTab === 'banners' && (
+            <div className="max-w-2xl bg-white p-8 rounded-3xl border border-slate-100 shadow-xl main-content-fade">
+              <h3 className="text-xl font-black italic uppercase tracking-tight mb-6 text-slate-900">
+                Жаңы жарнамалык баннер кошуу (Слайдер)
+              </h3>
+              <form onSubmit={handleAddBanner} className="space-y-4">
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Жарнаманын аталышы *</label>
+                  <input type="text" value={bannerTitle} onChange={(e) => setBannerTitle(e.target.value)} className="w-full p-4 mt-1 bg-slate-50 border border-transparent rounded-2xl outline-none focus:border-indigo-500 text-sm font-medium" placeholder="Мисалы: Жайкы супер арзандатуулар!" />
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Кыскача маалымат (Описание)</label>
+                  <textarea value={bannerDesc} onChange={(e) => setBannerDesc(e.target.value)} className="w-full p-4 mt-1 bg-slate-50 border border-transparent rounded-2xl outline-none focus:border-indigo-500 text-sm font-medium h-20 resize-none" placeholder="Жарнама боюнча кыскача текст..." />
+                </div>
+
+                {/* СҮРӨТТӨРДҮ КИРГИЗҮҮ */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Сүрөт URL 1 *</label>
+                    <input type="text" value={bannerImage1} onChange={(e) => setBannerImage1(e.target.value)} className="w-full p-3 mt-1 bg-slate-50 border border-transparent rounded-xl text-xs" placeholder="Негизги сүрөт" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Сүрөт URL 2</label>
+                    <input type="text" value={bannerImage2} onChange={(e) => setBannerImage2(e.target.value)} className="w-full p-3 mt-1 bg-slate-50 border border-transparent rounded-xl text-xs" placeholder="Экинчи сүрөт" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Сүрөт URL 3</label>
+                    <input type="text" value={bannerImage3} onChange={(e) => setBannerImage3(e.target.value)} className="w-full p-3 mt-1 bg-slate-50 border border-transparent rounded-xl text-xs" placeholder="Үчүнчү сүрөт" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Сүрөт URL 4</label>
+                    <input type="text" value={bannerImage4} onChange={(e) => setBannerImage4(e.target.value)} className="w-full p-3 mt-1 bg-slate-50 border border-transparent rounded-xl text-xs" placeholder="Төртүнчү сүрөт" />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Басканда өтүүчү шилтеме</label>
+                  <input type="text" value={bannerLink} onChange={(e) => setBannerLink(e.target.value)} className="w-full p-4 mt-1 bg-slate-50 border border-transparent rounded-2xl outline-none focus:border-indigo-500 text-sm font-medium" placeholder="Мисалы: /product/15" />
+                </div>
+
+                <button type="submit" className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold text-sm uppercase tracking-widest transition-all shadow-lg active:scale-98">
+                  Жарнаманы сактоо
+                </button>
+              </form>
             </div>
           )}
         </main>

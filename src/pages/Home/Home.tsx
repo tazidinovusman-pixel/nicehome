@@ -16,6 +16,7 @@ import HallwaySection from '../../components/sections/DoorOpen';
 import OfficeSection from '../../components/sections/Laptop';
 import GardenSection from '../../components/sections/TreePine';
 import PromoSlider from './PromoSlider';
+import MainPromoBanner from '../../components/MainPromoBanner';
 
 
 const ServiceBanner = ({ serviceName, lang, variant = 1 }) => {
@@ -178,6 +179,7 @@ const Home = () => {
     <div className={`min-h-screen pb-20 ${darkMode ? 'bg-slate-950 text-white' : 'bg-white text-slate-900'}`}>
       <CategoryBar activeCategory={categoryParam} setActiveCategory={setActiveCategory} />
        <PromoSlider />
+       {categoryParam === 'All' && !searchTerm && <MainPromoBanner />}
 
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-6">
         {categoryParam === 'All' && !searchTerm ? (
