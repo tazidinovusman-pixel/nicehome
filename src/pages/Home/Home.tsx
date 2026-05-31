@@ -17,6 +17,7 @@ import OfficeSection from '../../components/sections/Laptop';
 import GardenSection from '../../components/sections/TreePine';
 import PromoSlider from './PromoSlider';
 import MainPromoBanner from '../../components/MainPromoBanner';
+import ProductNotFound from '../../components/ProductNotFound';
 
 
 const ServiceBanner = ({ serviceName, lang, variant = 1 }) => {
@@ -239,7 +240,7 @@ const Home = () => {
                 />
               </>
             ) : (
-              <div className="text-center py-20 opacity-50 italic">Товар табылган жок...</div>
+              <ProductNotFound setSearchQuery={() => setSearchParams({})} />
             )}
           </div>
         )}

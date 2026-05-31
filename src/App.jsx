@@ -18,6 +18,8 @@ import {
 import { supabase } from './api/supabaseClient';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
+import NotFound from './pages/NotFound';
+import SiteStatistics from './components/SiteStatistics';
 export const LanguageContext = createContext();
 
 const translations = {
@@ -265,6 +267,8 @@ function App() {
                 <Route path="/product/:id" element={<ProductDetail />} />
                 {/* <Route path="/admin" element={user?.email === ADMIN_EMAIL ? <Admin /> : <Navigate to="/" />} /> */}
                 <Route path="/admin" element={(userRole === 'admin' || userRole === 'seller') ? <Admin /> : <Navigate to="/" />} />
+                <Route path="/stats" element={<SiteStatistics darkMode={darkMode} />} />
+                <Route path="*" element={<NotFound />} />
               </Routes>
             </main>
 

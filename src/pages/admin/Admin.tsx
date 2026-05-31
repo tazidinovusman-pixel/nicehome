@@ -5,9 +5,12 @@ import {
   Trash2, PackagePlus, Tag, Banknote, Image as ImageIcon,
   PlusCircle, Users, LayoutDashboard, Menu, X, Package, LogOut,
   FileText, Calendar, Sparkles, Mail, UserCircle,
-  Pencil
+  Pencil,
+  BarChart3
 } from 'lucide-react';
 import AdminBanners from '../../pages/AdminBanners';
+import SiteStatistics from '../../components/SiteStatistics';
+
 
 const Admin = () => {
   const { lang, translations, userRole, user } = useContext(LanguageContext);
@@ -29,7 +32,7 @@ const Admin = () => {
   const [description, setDescription] = useState('');
   const [year, setYear] = useState('2026');
   const [isNew, setIsNew] = useState(false);
-
+const { darkMode } = useContext(LanguageContext);
   const [bannerTitle, setBannerTitle] = useState('');
   const [bannerDesc, setBannerDesc] = useState('');
   const [bannerImage1, setBannerImage1] = useState('');
@@ -258,6 +261,12 @@ const Admin = () => {
                 }`}
             >
               <span className="text-base">🛠️</span> ЖАРНАМАЛАРДЫ БАШКАРУУ
+            </button>
+            <button
+              onClick={() => { setActiveTab('analytics'); setIsSidebarOpen(false); }}
+              className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl font-bold text-xs uppercase tracking-widest transition-all ${activeTab === 'analytics' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/50' : 'text-slate-400 hover:bg-slate-800'}`}
+            >
+              <BarChart3 size={20} /> СТАТИСТИКА
             </button>
           </nav>
         </div>
@@ -522,6 +531,7 @@ const Admin = () => {
             </div>
           )}
           {activeTab === 'manage_banners' && <AdminBanners />}
+          {activeTab === 'analytics' && <SiteStatistics darkMode={darkMode} />}
         </main>
       </div>
     </div>
