@@ -102,12 +102,10 @@ const { darkMode } = useContext(LanguageContext);
     fetchData();
   }, [userRole, user?.id]);
 
-  // ТОВАР КОШУУ (author_id кошулду)
   const handleAddProduct = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Бош эмес шилтемелерди гана массивге чогултабыз
     const finalImages = imagesList.filter(url => url.trim() !== "");
 
     const { data, error } = await supabase
@@ -208,7 +206,7 @@ const { darkMode } = useContext(LanguageContext);
     }
   };
   const [editingProductId, setEditingProductId] = useState(null);
-  // ТОВАР ӨЧҮРҮҮ (Экранды дароо тазалоо кошулду)
+ 
   const handleDeleteProduct = async (id: number) => {
     if (window.confirm("Бул товарды өчүрүүнү каалайсызбы?")) {
       const { error } = await supabase
@@ -229,7 +227,7 @@ const { darkMode } = useContext(LanguageContext);
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col lg:flex-row">
-      {/* SIDEBAR ОШОЛ БОЙДОН */}
+    
       <div className={`fixed inset-y-0 left-0 z-50 w-72 bg-slate-900 text-white transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:relative lg:translate-x-0`}>
         <div className="p-8 flex flex-col h-full">
           <h2 className="text-xl font-black italic text-indigo-400 mb-12 flex items-center gap-2 uppercase tracking-tighter">
@@ -245,22 +243,22 @@ const { darkMode } = useContext(LanguageContext);
             <button onClick={() => { setActiveTab('users'); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl font-bold text-xs uppercase tracking-widest transition-all ${activeTab === 'users' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/50' : 'text-slate-400 hover:bg-slate-800'}`}>
               <Users size={20} /> {t.customers}
             </button>
-            {/* 🔥 1. ЖАРНАМА КУРУУ / КОШУУ БАСКЫЧЫ */}
+           
             <button
               onClick={() => { setActiveTab('banners'); setIsSidebarOpen(false); }} // Кошумча жабылуу функциясы кошулду
               className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl font-bold text-xs uppercase tracking-widest transition-all ${activeTab === 'banners' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/50' : 'text-slate-400 hover:bg-slate-800'
                 }`}
             >
-              <span className="text-base">📢</span> ЖАРНАМАЛАР
+              <span className="text-base"></span> ЖАРНАМАЛАР
             </button>
 
-            {/* 🔥 2. ЖАРНАМАЛАРДЫ БАШКАРУУ / ӨЧҮРҮҮ БАСКЫЧЫ */}
+            
             <button
               onClick={() => { setActiveTab('manage_banners'); setIsSidebarOpen(false); }} // Кошумча жабылуу функциясы кошулду
               className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl font-bold text-xs uppercase tracking-widest transition-all ${activeTab === 'manage_banners' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/50' : 'text-slate-400 hover:bg-slate-800'
                 }`}
             >
-              <span className="text-base">🛠️</span> ЖАРНАМАЛАРДЫ БАШКАРУУ
+              <span className="text-base"></span> ЖАРНАМАЛАРДЫ БАШКАРУУ
             </button>
             <button
               onClick={() => { setActiveTab('analytics'); setIsSidebarOpen(false); }}
@@ -307,14 +305,14 @@ const { darkMode } = useContext(LanguageContext);
                   <div className="relative">
                     <PlusCircle className="absolute left-4 top-4 text-slate-400" size={18} />
                     <select className="w-full pl-12 pr-4 py-4 bg-slate-50 rounded-2xl outline-none ring-1 ring-slate-200 focus:ring-2 focus:ring-indigo-500 appearance-none cursor-pointer" value={category} onChange={(e) => setCategory(e.target.value)}>
-                      <option value="Living Room">🛋️ Living Room</option>
-                      <option value="Kitchen">🍳 Kitchen</option>
-                      <option value="Bedroom">🛏️ Bedroom</option>
-                      <option value="Bathroom">🚿 Bathroom</option>
-                      <option value="Kids Room">🧸 Kids Room</option>
-                      <option value="Hallway">🧥 Hallway</option>
-                      <option value="Office">💻 Office</option>
-                      <option value="Garden">🌿 Garden</option>
+                      <option value="Living Room"> Living Room</option>
+                      <option value="Kitchen"> Kitchen</option>
+                      <option value="Bedroom"> Bedroom</option>
+                      <option value="Bathroom"> Bathroom</option>
+                      <option value="Kids Room"> Kids Room</option>
+                      <option value="Hallway"> Hallway</option>
+                      <option value="Office"> Office</option>
+                      <option value="Garden"> Garden</option>
                     </select>
                   </div>
                   <div className="relative">
@@ -343,12 +341,12 @@ const { darkMode } = useContext(LanguageContext);
                     <input
                       type="checkbox"
                       id="is_new"
-                      checked={isNew} // 👈 Ката кеткен formData.is_new ордуна өзүнүн туура өзгөрмөсү коюлду
-                      onChange={(e) => setIsNew(e.target.checked)} // 👈 setIsNew функциясы туура иштетилет
+                      checked={isNew} 
+                      onChange={(e) => setIsNew(e.target.checked)} 
                       className="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500 cursor-pointer accent-indigo-600"
                     />
                     <span className="text-xs uppercase tracking-wider font-bold text-slate-600">
-                      Жаңы товар ( <span className="text-green-500">✨ NEW</span> )
+                      Жаңы товар ( <span className="text-green-500"> NEW</span> )
                     </span>
                   </label>
 

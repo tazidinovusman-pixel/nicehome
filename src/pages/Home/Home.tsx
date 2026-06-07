@@ -118,21 +118,18 @@ const Home = () => {
         darkMode ? 'bg-slate-900 border border-slate-800' : 'bg-slate-50'
       }`}
     >
-      {/* Сен каалагандай object-cover жана scale-102 менен таза сүрөт */}
       <img 
         src={item.image_url} 
         alt={item.name} 
         className="w-full h-full object-cover  group-hover:scale-102 transition-transform duration-300" 
       />
 
-      {/* "ЖАҢЫ" белгиси */}
       {item.is_new && (
         <div className="absolute top-3 left-3 bg-green-500 text-white text-[8px] font-black px-2 py-1 rounded-lg uppercase tracking-widest shadow-lg z-20">
           New
         </div>
       )}
 
-      {/* Сен каалагандай чакан жана назик Жүрөк баскычы */}
       <button
         onClick={(e) => {
           e.stopPropagation();
@@ -147,7 +144,6 @@ const Home = () => {
         />
       </button>
 
-      {/* Сатып алуу (+) баскычы */}
       <button
         onClick={(e) => {
           e.stopPropagation();
@@ -159,7 +155,6 @@ const Home = () => {
       </button>
     </div>
 
-    {/* Товардын маалыматтары (Аты, баасы) */}
     <div className="px-1 cursor-pointer" onClick={() => navigate(`/product/${item.id}`)}>
       <p className="text-[8px] uppercase tracking-[0.2em] text-slate-400 mb-1">{item.category}</p>
       <h2 className="text-sm font-bold line-clamp-1 group-hover:text-indigo-600 transition-colors">{item.name}</h2>
@@ -213,7 +208,7 @@ const Home = () => {
                   {products.map((item) => <ProductCard key={item.id} item={item} />)}
                 </div>
 
-                {/* ЧОҢ ЖАНА КӨП МААЛЫМАТТУУ БАННЕР */}
+                {/*  БАННЕР */}
                 <ServiceBanner
                   lang={lang}
                   serviceName={
@@ -250,63 +245,3 @@ const Home = () => {
 };
 
 export default Home;
-
-
-
-
-// const Home = () => {
-//   // ... (башка коддор өзгөрүүсүз калат)
-
-//   const categoryParam = searchParams.get('category') || 'all'; // Баштапкы маанисин кичинекей 'all' кылалы
-//   const searchTerm = searchParams.get('search') || '';
-
-//   // Сиздин кодуңуздагы setActiveCategory функциясы:
-//   const setActiveCategory = (category) => {
-//     const cat = category.toLowerCase().trim(); // боштуктарды тазалайт
-//     if (cat === 'all') {
-//       setSearchParams({});
-//     } else {
-//       setSearchParams({ category: cat });
-//     }
-//   };
-
-//   useEffect(() => {
-//     const fetchProducts = async () => {
-//       setLoading(true);
-//       let query = supabase.from('items').select('*');
-      
-//       // Эгер 'all' эмес болсо, базадан издейбиз
-//       if (categoryParam !== 'all') {
-//         // Эгер Supabase базаңызда категориялар "Living Room" же "Kids Room" деп чоң тамга менен жазылса,
-//         // анда төмөнкү 'ilike' чыпкасы баарын кичинекей тамга менен салыштырып, катасыз таап берет.
-//         query = query.ilike('category', categoryParam); 
-//       }
-      
-//       if (searchTerm) query = query.ilike('name', `%${searchTerm}%`);
-      
-//       const { data, error } = await query;
-//       if (error) console.error("Error fetching:", error);
-//       setProducts(data || []);
-//       setLoading(false);
-//     };
-//     fetchProducts();
-//   }, [categoryParam, searchTerm]);
-
-//   // ... (башка коддор өзгөрүүсүз калат)
-  
-//   return (
-//     // ...
-//     {categoryParam === 'all' && !searchTerm ? (
-//       <div className="space-y-16">
-//         {/* Бул жерде t.categories объектисине categoryParam туура өтүшү керек */}
-//         <SofaSection products={products} ProductCard={ProductCard} setActiveCategory={setActiveCategory} t={t.categories} />
-//         {/* Калган секциялар... */}
-//       </div>
-//     ) : (
-//       // Категория тандалгандагы код...
-//       <h2 className="text-4xl font-black uppercase italic tracking-tighter">
-//         {searchTerm ? `"${searchTerm}"` : (t.categories[categoryParam.toLowerCase()] || categoryParam)}
-//       </h2>
-//     )}
-//   );
-// };

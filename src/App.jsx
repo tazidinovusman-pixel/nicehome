@@ -172,13 +172,13 @@ function App() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       const sessionUser = session?.user ?? null;
       setUser(sessionUser);
-      getProfile(sessionUser); // Ролду текшерүү
+      getProfile(sessionUser); 
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       const sessionUser = session?.user ?? null;
       setUser(sessionUser);
-      getProfile(sessionUser); // Ролду текшерүү
+      getProfile(sessionUser); 
     });
 
     return () => subscription.unsubscribe();
@@ -212,7 +212,7 @@ function App() {
             />
 
 
-            {/* --- БУРГЕР МЕНЮ --- */}
+            {/*МЕНЮ */}
             {isMenuOpen && (
               <div className="fixed inset-0 z-[110] flex">
                 <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onClick={() => setIsMenuOpen(false)} />

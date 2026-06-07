@@ -125,7 +125,6 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* 3. БАЙЛАНЫШ (Тиркемелерсиз) */}
           <div className="space-y-4">
             <h3 className={`text-xs font-black uppercase tracking-widest ${darkMode ? 'text-white' : 'text-slate-900'}`}>
               {lang === 'KG' ? 'Байланыш' : lang === 'RU' ? 'Контакты' : 'Contact'}
@@ -139,14 +138,14 @@ const Footer = () => {
                 <Mail size={12} className="text-indigo-500" /> nicehome@gmail.com
               </div>
               <div className="flex items-center gap-2 text-[10px]">
-                {/* 📍 ДАРЕК: Басканда жаңы баракта 2GIS же Яндекс Карта ачылат */}
+                
                 <a
-                  href="https://go.2gis.com/frkYh" // 👈 Бул жерге өзүңүздүн дүкөндүн так координаттарын же дарегин жазыңыз
+                  href="https://go.2gis.com/frkYh" 
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-indigo-600 transition-colors flex items-center gap-1 font-medium"
                 >
-                  Бишкек,Зайсановский переулок {/* Сүрөттөгү дарек */}
+                  Бишкек,Зайсановский переулок 
                 </a>
               </div>
               <div className="flex items-center gap-2 text-[10px] pt-2 border-t border-slate-100 dark:border-slate-800 w-fit">

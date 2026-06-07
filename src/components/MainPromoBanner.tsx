@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { supabase } from '../api/supabaseClient';
-import { useCart } from '../context/CartContext'; 
+import { useCart } from '../context/CartContext';
 import { ArrowUpRight, ChevronLeft, ChevronRight, X, ShoppingCart, Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom'; // Баракчага багыттоо үчүн
 
@@ -9,7 +9,7 @@ export default function MainPromoBanner() {
   const [allImages, setAllImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentImgIndex, setCurrentImgIndex] = useState(0);
-  
+
   // КАТТАЛГАНЫН ТЕКШЕРҮҮ ҮЧҮН STATE
   const [user, setUser] = useState(null);
 
@@ -17,8 +17,8 @@ export default function MainPromoBanner() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSlide, setSelectedSlide] = useState(null);
 
-  const { addToCart, toggleFavorite, favorites } = useCart(); 
-  const navigate = useNavigate(); 
+  const { addToCart, toggleFavorite, favorites } = useCart();
+  const navigate = useNavigate();
   const timeoutRef = useRef(null);
 
   useEffect(() => {
@@ -100,7 +100,7 @@ export default function MainPromoBanner() {
   // 🔥 СЕБЕТКЕ КОШУУ БАСЫЛГАНДА ТЕКШЕРҮҮ
   const handleAddToCart = (e, slide) => {
     e.stopPropagation();
-    
+
     if (!user) {
       alert("Товарды себетке кошуу үчүн алгач катталууңуз керек!");
       navigate('/auth'); // 👈 Бул жер дагы /auth болду
@@ -108,15 +108,15 @@ export default function MainPromoBanner() {
     }
 
     const productToCart = {
-      id: slide.item.id || String(Date.now()), 
-      name: slide.title, 
-      price: Number(slide.item.price) || 0, 
+      id: slide.item.id || String(Date.now()),
+      name: slide.title,
+      price: Number(slide.item.price) || 0,
       image_url: slide.url,
       quantity: 1
     };
 
     if (typeof addToCart === 'function') {
-      addToCart(productToCart); 
+      addToCart(productToCart);
       alert(`"${slide.title}" себетке кошулду!`);
     }
   };
@@ -124,7 +124,7 @@ export default function MainPromoBanner() {
   // 🔥 ИЗБРАННОЕ БАСЫЛГАНДА ТЕКШЕРҮҮ
   const handleAddToFavorites = (e, slide) => {
     e.stopPropagation();
-    
+
     if (!user) {
       alert("Тандалгандарга кошуу үчүн алгач катталууңуз керек!");
       navigate('/auth'); // 👈 Бул жер дагы /auth болду
@@ -154,30 +154,30 @@ export default function MainPromoBanner() {
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 mt-4 mb-6">
       {/* БАННЕР КОРПУСУ */}
-      <div 
+      <div
         onClick={openPromoModal}
         className="relative w-full rounded-[2rem] overflow-hidden bg-slate-900 text-white flex flex-col md:flex-row md:items-center shadow-xl group/banner transition-all duration-500 min-h-[300px] md:min-h-[340px] cursor-pointer hover:shadow-2xl"
       >
         {/* СҮРӨТТӨР (КОМПЬЮТЕР) */}
         <div className="absolute inset-0 w-full h-full hidden md:block">
           {allImages.map((slide, idx) => (
-            <img 
+            <img
               key={idx}
-              src={slide.url} 
-              alt={slide.title} 
+              src={slide.url}
+              alt={slide.title}
               className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-1000 ease-in-out ${idx === currentImgIndex ? 'opacity-100' : 'opacity-0'}`}
             />
           ))}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent" />
+
         </div>
 
         {/* СҮРӨТТӨР (ТЕЛЕФОН) */}
         <div className="relative w-full h-[180px] sm:h-[220px] block md:hidden bg-slate-950">
           {allImages.map((slide, idx) => (
-            <img 
+            <img
               key={idx}
-              src={slide.url} 
-              alt={slide.title} 
+              src={slide.url}
+              alt={slide.title}
               className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-1000 ease-in-out ${idx === currentImgIndex ? 'opacity-100' : 'opacity-0'}`}
             />
           ))}
@@ -189,13 +189,13 @@ export default function MainPromoBanner() {
           <span className="bg-indigo-600 text-white text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest animate-pulse">
             АКЦИЯ / РЕКЛАМА
           </span>
-          
-          <h2 className="text-xl sm:text-2xl md:text-5xl font-black uppercase italic tracking-tight leading-tight drop-shadow-md text-white">
+
+          <h2 className="text-xl sm:text-2xl md:text-5xl font-black uppercase italic tracking-tight leading-tight text-slate-900">
             {currentSlide.title}
           </h2>
-          
+
           {currentSlide.desc && (
-            <p className="text-xs sm:text-sm md:text-base text-slate-300 md:text-slate-200/90 font-medium line-clamp-3 md:line-clamp-2 max-w-md">
+            <p className="text-xs sm:text-sm md:text-base text-slate-600">
               {currentSlide.desc}
             </p>
           )}
@@ -206,7 +206,7 @@ export default function MainPromoBanner() {
             </p>
           )}
 
-          <button 
+          <button
             onClick={(e) => { e.stopPropagation(); openPromoModal(); }}
             className="mt-2 flex items-center gap-1.5 bg-white text-slate-900 hover:bg-indigo-600 hover:text-white font-bold text-xs uppercase tracking-wider px-5 py-3 rounded-xl transition-all duration-300 shadow-lg w-full sm:w-auto justify-center"
           >
@@ -239,11 +239,11 @@ export default function MainPromoBanner() {
       {/* МОДАЛДЫК ТЕРЕЗЕ */}
       {isModalOpen && selectedSlide && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in" onClick={() => setIsModalOpen(false)}>
-          <div 
+          <div
             className="bg-white text-slate-900 w-full max-w-2xl rounded-[2rem] overflow-hidden shadow-2xl relative flex flex-col md:flex-row max-h-[90vh] md:max-h-none overflow-y-auto md:overflow-visible"
             onClick={(e) => e.stopPropagation()}
           >
-            <button 
+            <button
               onClick={() => setIsModalOpen(false)}
               className="absolute right-4 top-4 z-30 p-2 rounded-full bg-black/50 md:bg-slate-100 text-white md:text-slate-700 hover:bg-red-500 hover:text-white transition-all shadow-md"
             >
@@ -262,7 +262,7 @@ export default function MainPromoBanner() {
                 <h3 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 leading-tight">
                   {selectedSlide.title}
                 </h3>
-                
+
                 {selectedSlide.item?.price && (
                   <p className="text-2xl font-black text-blue-600">
                     {selectedSlide.item.price} сом
@@ -275,20 +275,19 @@ export default function MainPromoBanner() {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-2 w-full mt-2">
-                <button 
+                <button
                   onClick={(e) => handleAddToCart(e, selectedSlide)}
                   className="flex-1 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs uppercase tracking-wider py-3.5 rounded-xl transition-all shadow-lg active:scale-95"
                 >
                   <ShoppingCart size={16} /> Себетке кошуу
                 </button>
-                
-                <button 
+
+                <button
                   onClick={(e) => handleAddToFavorites(e, selectedSlide)}
-                  className={`p-3.5 border rounded-xl transition-all flex items-center justify-center active:scale-95 ${
-                    isCurrentItemFavorite 
-                      ? 'border-red-500 bg-red-50 text-red-500' 
+                  className={`p-3.5 border rounded-xl transition-all flex items-center justify-center active:scale-95 ${isCurrentItemFavorite
+                      ? 'border-red-500 bg-red-50 text-red-500'
                       : 'border-slate-200 hover:border-red-500 hover:bg-red-50 text-slate-500 hover:text-red-500'
-                  }`}
+                    }`}
                 >
                   <Heart size={18} className={isCurrentItemFavorite ? "fill-current" : ""} />
                 </button>
