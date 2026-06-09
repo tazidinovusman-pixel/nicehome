@@ -245,3 +245,78 @@ const Home = () => {
 };
 
 export default Home;
+
+
+
+
+// return (
+//     <div className={`min-h-screen pb-20 ${darkMode ? 'bg-slate-950 text-white' : 'bg-white text-slate-900'}`}>
+//       <CategoryBar activeCategory={categoryParam} setActiveCategory={setActiveCategory} />
+//        <PromoSlider />
+//        {categoryParam === 'All' && !searchTerm && <MainPromoBanner />}
+
+//       <div className="max-w-7xl mx-auto px-4 md:px-6 py-6">
+//         {categoryParam === 'All' && !searchTerm ? (
+//           /* --- БАШКЫ БЕТТЕ БАННЕРЛЕР ЖОК --- */
+//           <div className="space-y-16">
+//             <SofaSection products={products} ProductCard={ProductCard} setActiveCategory={setActiveCategory} t={t.categories} />
+//             <KitchenSection products={products} ProductCard={ProductCard} setActiveCategory={setActiveCategory} t={t.categories} />
+//             <BedroomSection products={products} ProductCard={ProductCard} setActiveCategory={setActiveCategory} t={t.categories} />
+//             <BathSection products={products} ProductCard={ProductCard} setActiveCategory={setActiveCategory} t={t.categories} />
+//             <KidsSection products={products} ProductCard={ProductCard} setActiveCategory={setActiveCategory} t={t.categories} />
+//             <HallwaySection products={products} ProductCard={ProductCard} setActiveCategory={setActiveCategory} t={t.categories} />
+//             <OfficeSection products={products} ProductCard={ProductCard} setActiveCategory={setActiveCategory} t={t.categories} />
+//             <GardenSection products={products} ProductCard={ProductCard} setActiveCategory={setActiveCategory} t={t.categories} />
+//           </div>
+//         ) : (
+//           /* --- ИЗДӨӨ ЖЕ КАТЕГОРИЯ ТАНДАЛГАНДА БАННЕР МЕНЕН ЧЫГАТ --- */
+//           <div className="fade-in">
+//             <div className="mb-10 text-center md:text-left">
+//               <p className="text-indigo-600 text-[10px] font-black uppercase tracking-[0.3em] mb-2">
+//                 {searchTerm ? 'Жыйынтыктар' : 'Категория'}
+//               </p>
+//               <h2 className="text-4xl font-black uppercase italic tracking-tighter">
+//                 {searchTerm ? `"${searchTerm}"` : (t.categories[categoryParam.toLowerCase()] || categoryParam)}
+//               </h2>
+//             </div>
+
+//             {products.length > 0 ? (
+//               <>
+//                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-10 md:gap-8">
+//                   {products.map((item) => <ProductCard key={item.id} item={item} />)}
+//                 </div>
+
+//                 {/*  БАННЕР */}
+//                 <ServiceBanner
+//                   lang={lang}
+//                   serviceName={
+//                     searchTerm ? "Универсал уста"
+//                       : categoryParam.toLowerCase() === 'kitchen' ? "Сантехник / Ашкана устасы"
+//                         : categoryParam.toLowerCase() === 'bedroom' ? "Эмерек жыйноочу адис"
+//                           : categoryParam.toLowerCase() === 'bathroom' ? "Кесипкөй сантехник"
+//                             : categoryParam.toLowerCase() === 'kids' ? "Балдар эмерек устасы"
+//                               : categoryParam.toLowerCase() === 'hallway' ? "Шкаф жана эшик устасы"
+//                                 : categoryParam.toLowerCase() === 'office' ? "IT / Электрик адиси"
+//                                   : categoryParam.toLowerCase() === 'garden' ? "Ландшафт дизайнери"
+//                                     : "Үй адиси"
+//                   }
+//                   variant={
+//                     categoryParam.toLowerCase() === 'kitchen' ? 2
+//                       : categoryParam.toLowerCase() === 'bedroom' ? 3
+//                         : categoryParam.toLowerCase() === 'bathroom' ? 4
+//                           : categoryParam.toLowerCase() === 'kids' ? 5
+//                             : categoryParam.toLowerCase() === 'hallway' ? 6
+//                               : categoryParam.toLowerCase() === 'office' ? 7
+//                                 : categoryParam.toLowerCase() === 'garden' ? 8
+//                                   : 1
+//                   }
+//                 />
+//               </>
+//             ) : (
+//               <ProductNotFound setSearchQuery={() => setSearchParams({})} />
+//             )}
+//           </div>
+//         )}
+//       </div>
+//     </div>
+//   );
