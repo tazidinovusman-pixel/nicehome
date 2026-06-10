@@ -538,3 +538,37 @@ const { darkMode } = useContext(LanguageContext);
 
 export default Admin;
 
+//                 {/*  БАННЕР */}
+//                 <ServiceBanner
+//                   lang={lang}
+//                   serviceName={
+//                     searchTerm ? "Универсал уста"
+//                       : categoryParam.toLowerCase() === 'kitchen' ? "Сантехник / Ашкана устасы"
+//                         : categoryParam.toLowerCase() === 'bedroom' ? "Эмерек жыйноочу адис"
+//                           : categoryParam.toLowerCase() === 'bathroom' ? "Кесипкөй сантехник"
+//                             : categoryParam.toLowerCase() === 'kids' ? "Балдар эмерек устасы"
+//                               : categoryParam.toLowerCase() === 'hallway' ? "Шкаф жана эшик устасы"
+//                                 : categoryParam.toLowerCase() === 'office' ? "IT / Электрик адиси"
+//                                   : categoryParam.toLowerCase() === 'garden' ? "Ландшафт дизайнери"
+//                                     : "Үй адиси"
+//                   }
+//                   variant={
+//                     categoryParam.toLowerCase() === 'kitchen' ? 2
+//                       : categoryParam.toLowerCase() === 'bedroom' ? 3
+//                         : categoryParam.toLowerCase() === 'bathroom' ? 4
+//                           : categoryParam.toLowerCase() === 'kids' ? 5
+//                             : categoryParam.toLowerCase() === 'hallway' ? 6
+//                               : categoryParam.toLowerCase() === 'office' ? 7
+//                                 : categoryParam.toLowerCase() === 'garden' ? 8
+//                                   : 1
+//                   }
+//                 />
+//               </>
+//             ) : (
+//               <ProductNotFound setSearchQuery={() => setSearchParams({})} />
+//             )}
+//           </div>
+//         )}
+//       </div>
+//     </div>
+//   );
