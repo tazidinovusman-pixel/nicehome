@@ -63,7 +63,6 @@ const menuCategories = [
   { key: 'garden', icon: <TreePine size={20} /> },
 ];
 
-// Аргументтерге "userRole" кошулду
 const Navbar = ({ t, darkMode, setDarkMode, setIsMenuOpen, user, ADMIN_EMAIL, userRole }) => { 
   const { cart } = useCart();
   const navigate = useNavigate();
@@ -149,7 +148,7 @@ const Navbar = ({ t, darkMode, setDarkMode, setIsMenuOpen, user, ADMIN_EMAIL, us
 
 function App() {
   const [user, setUser] = useState(null);
-  const [userRole, setUserRole] = useState('user'); // Жаңы сап: ролду сактоо
+  const [userRole, setUserRole] = useState('user'); 
   const [lang, setLang] = useState('KG');
   const [darkMode, setDarkMode] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -212,7 +211,6 @@ function App() {
             />
 
 
-            {/*МЕНЮ */}
             {isMenuOpen && (
               <div className="fixed inset-0 z-[110] flex">
                 <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onClick={() => setIsMenuOpen(false)} />
@@ -265,7 +263,6 @@ function App() {
                 <Route path="/favorites" element={<Favorites />} />
                 <Route path="/profile" element={user ? <Profile /> : <Navigate to="/auth" />} />
                 <Route path="/product/:id" element={<ProductDetail />} />
-                {/* <Route path="/admin" element={user?.email === ADMIN_EMAIL ? <Admin /> : <Navigate to="/" />} /> */}
                 <Route path="/admin" element={(userRole === 'admin' || userRole === 'seller') ? <Admin /> : <Navigate to="/" />} />
                 <Route path="/stats" element={<SiteStatistics darkMode={darkMode} />} />
                 <Route path="*" element={<NotFound />} />
@@ -281,3 +278,4 @@ function App() {
 }
 
 export default App;
+

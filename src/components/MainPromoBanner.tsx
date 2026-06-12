@@ -214,7 +214,6 @@ export default function MainPromoBanner() {
           </button>
         </div>
 
-        {/* СТРЕЛКАЛАР */}
         {allImages.length > 1 && (
           <>
             <button onClick={prevSlide} className="absolute left-3 top-[75px] sm:top-[95px] md:top-1/2 md:-translate-y-1/2 z-20 p-2 rounded-full bg-black/40 hover:bg-indigo-600 text-white backdrop-blur-xs md:opacity-0 group-hover/banner:opacity-100 transition-all duration-300">
@@ -226,7 +225,7 @@ export default function MainPromoBanner() {
           </>
         )}
 
-        {/* ЧЕКИTТЕР */}
+       
         {allImages.length > 1 && (
           <div className="absolute top-[160px] sm:top-[200px] md:top-auto md:bottom-4 left-1/2 transform -translate-x-1/2 z-20 flex gap-1.5">
             {allImages.map((_, idx) => (

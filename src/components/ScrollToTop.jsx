@@ -7,7 +7,7 @@ export default function ScrollToTop() {
 
   useEffect(() => {
     try {
-      // Экранды өйдө жылдыруу
+     
       window.scrollTo({
         top: 0,
         left: 0,
